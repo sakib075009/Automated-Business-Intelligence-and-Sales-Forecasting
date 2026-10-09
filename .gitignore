@@ -1,7 +1,34 @@
+﻿
+# Python environment and cache
 .venv/
 __pycache__/
-*.pyc
+*.py[cod]
 .ipynb_checkpoints/
 .vscode/
+
+# Secrets and local configuration
 .env
+.env.*
+!.env.example
+
+# Logs and temporary files
 *.log
+*.tmp
+*.restore
+
+# Incremental generator local state and recovery journal
+data/raw/incremental_generator_state.json
+data/raw/incremental_generator_pending.json
+
+# Generated backups
+data/backups/
+
+# Local audit output
+audit_output.txt
+
+# Local pre-recovery source backup
+src/incremental_data_generator_pre_recovery.py
+
+# Accidental local terminal-output file; keep out of Git
+
+/t PASS*
