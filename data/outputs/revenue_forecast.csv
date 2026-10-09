@@ -1,0 +1,7 @@
+forecast_month,forecast_revenue,method,source_month
+2026-01-01,151702438.59,Seasonal Naive,2025-01-01
+2026-02-01,150552941.61,Seasonal Naive,2025-02-01
+2026-03-01,166491665.72,Seasonal Naive,2025-03-01
+2026-04-01,168512374.47,Seasonal Naive,2025-04-01
+2026-05-01,179324647.59,Seasonal Naive,2025-05-01
+2026-06-01,167205085.67,Seasonal Naive,2025-06-01
