@@ -6,7 +6,7 @@ import json
 import random
 import tempfile
 import unittest
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 from unittest.mock import patch
 
@@ -27,8 +27,132 @@ def file_hash(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-class TestIncrementalRecovery(unittest.TestCase):
+class TestIncrementalScheduling(unittest.TestCase):
+    def test_2026_batch_pattern(self):
+        expected = [3, 3, 3, 4]
+        actual = [
+            generator.planned_batch_size(date(2026, 10, 10), i)
+            for i in range(4)
+        ]
+        self.assertEqual(actual, expected)
 
+    def test_january_2027_uses_one_day(self):
+        self.assertEqual(
+            generator.planned_batch_size(date(2027, 1, 1), 0), 1
+        )
+        self.assertEqual(
+            generator.planned_batch_size(date(2027, 1, 2), 3), 1
+        )
+
+    def test_first_batch_dates(self):
+        planned = generator.plan_simulated_dates(
+            date(2026, 1, 1), date(2026, 10, 10), 0
+        )
+        self.assertEqual(
+            planned,
+            [date(2026, 1, 1), date(2026, 1, 2), date(2026, 1, 3)],
+        )
+
+
+    def test_december_31_endpoint(self):
+        planned = generator.plan_simulated_dates(
+            date(2026, 9, 24), date(2026, 12, 31), 2
+        )
+        self.assertEqual(
+            planned,
+            [
+                date(2026, 9, 24),
+                date(2026, 9, 25),
+                date(2026, 9, 26),
+            ],
+        )
+
+
+
+    def test_january_2027_one_day_and_cutoff(self):
+        jan1 = generator.plan_simulated_dates(
+            date(2026, 9, 27), date(2027, 1, 1), 0
+        )
+        jan2 = generator.plan_simulated_dates(
+            date(2026, 9, 28), date(2027, 1, 2), 1
+        )
+
+        self.assertEqual(jan1, [date(2026, 9, 27)])
+        self.assertEqual(jan2, [date(2026, 9, 28)])
+
+        for run_date, planned in (
+            (date(2027, 1, 1), jan1),
+            (date(2027, 1, 2), jan2),
+        ):
+            cutoff = run_date - timedelta(days=generator.CUTOFF_DAYS)
+            self.assertTrue(all(day <= cutoff for day in planned))
+
+
+
+    def test_full_schedule_progression(self):
+        next_date = date(2026, 1, 1)
+        batch_index = 0
+        all_generated_dates = []
+
+        run_date = date(2026, 10, 10)
+        final_2026_run = date(2026, 12, 31)
+
+        while run_date <= final_2026_run:
+            planned = generator.plan_simulated_dates(
+                next_date, run_date, batch_index
+            )
+
+            expected_size = generator.planned_batch_size(
+                run_date, batch_index
+            )
+            self.assertEqual(len(planned), expected_size)
+
+            cutoff = run_date - timedelta(
+                days=generator.CUTOFF_DAYS
+            )
+            self.assertTrue(all(day <= cutoff for day in planned))
+
+            all_generated_dates.extend(planned)
+
+            if planned:
+                next_date = planned[-1] + timedelta(days=1)
+
+            batch_index = (
+                batch_index + 1
+            ) % len(generator.BATCH_PATTERN)
+            run_date += timedelta(days=1)
+
+        self.assertEqual(len(all_generated_dates), 269)
+        self.assertEqual(all_generated_dates[0], date(2026, 1, 1))
+        self.assertEqual(all_generated_dates[-1], date(2026, 9, 26))
+        self.assertEqual(
+            len(all_generated_dates),
+            len(set(all_generated_dates)),
+            "Simulated dates must not be duplicated.",
+        )
+
+        for run_date, expected_date in (
+            (date(2027, 1, 1), date(2026, 9, 27)),
+            (date(2027, 1, 2), date(2026, 9, 28)),
+            (date(2027, 1, 3), date(2026, 9, 29)),
+            (date(2027, 1, 4), date(2026, 9, 30)),
+        ):
+            planned = generator.plan_simulated_dates(
+                next_date, run_date, batch_index
+            )
+            self.assertEqual(planned, [expected_date])
+
+            cutoff = run_date - timedelta(
+                days=generator.CUTOFF_DAYS
+            )
+            self.assertTrue(all(day <= cutoff for day in planned))
+
+            next_date = planned[-1] + timedelta(days=1)
+            batch_index = (
+                batch_index + 1
+            ) % len(generator.BATCH_PATTERN)
+
+class TestIncrementalRecovery(unittest.TestCase):
     def test_generated_sales_have_valid_financials_and_variation(self):
         customers = generator.read_csv(
             generator.RAW / "dim_customer.csv"
@@ -355,6 +479,207 @@ class TestIncrementalRecovery(unittest.TestCase):
             self.assertEqual(dates.read_bytes(), original_dates)
             self.assertFalse(state.exists())
             self.assertTrue(journal.exists())
+
+
+    def test_successful_run_persists_state(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp = Path(temp_dir)
+            raw = temp / "data" / "raw"
+            raw.mkdir(parents=True)
+
+            fact = raw / "fact_sales.csv"
+            dates = raw / "dim_date.csv"
+            state = raw / "incremental_generator_state.json"
+            journal = raw / "incremental_generator_pending.json"
+
+            # Read the original data before redirecting file paths.
+            real_read_csv = generator.read_csv
+            customers = generator.read_csv(
+                generator.RAW / "dim_customer.csv"
+            )
+            products = generator.read_csv(
+                generator.RAW / "dim_product.csv"
+            )
+            regions = generator.read_csv(
+                generator.RAW / "dim_region.csv"
+            )
+            original_fact_rows = generator.read_csv(
+                generator.FACT_FILE
+            )
+            original_date_rows = generator.read_csv(
+                generator.DATE_FILE
+            )
+
+            fact.write_bytes(
+                csv_bytes(original_fact_rows, generator.FACT_COLUMNS)
+            )
+            dates.write_bytes(
+                csv_bytes(original_date_rows, generator.DATE_COLUMNS)
+            )
+
+            with (
+                patch.object(generator, "ROOT", temp),
+                patch.object(generator, "RAW", raw),
+                patch.object(generator, "FACT_FILE", fact),
+                patch.object(generator, "DATE_FILE", dates),
+                patch.object(generator, "STATE_FILE", state),
+                patch.object(generator, "JOURNAL_FILE", journal),
+                patch.object(generator, "BATCH_PATTERN", (3, 3, 3, 4)),
+                patch.object(generator, "read_csv") as mock_read_csv,
+                patch.object(
+                    sys,
+                    "argv",
+                    [
+                        "incremental_data_generator.py",
+                        "--apply",
+                        "--today",
+                        "2026-10-10",
+                    ],
+                ),
+            ):
+                def read_table(path):
+                    path = Path(path)
+
+                    if path == raw / "dim_customer.csv":
+                        return customers
+                    if path == raw / "dim_product.csv":
+                        return products
+                    if path == raw / "dim_region.csv":
+                        return regions
+                    if path == fact:
+                        return original_fact_rows
+                    if path == dates:
+                        return original_date_rows
+
+                    raise AssertionError(
+                        f"Unexpected CSV read: {path}"
+                    )
+
+                mock_read_csv.side_effect = read_table
+
+                result = generator.main()
+
+            # Check the result after the temporary-file patches are removed.
+            self.assertEqual(result, 0)
+            self.assertTrue(state.exists())
+            self.assertFalse(journal.exists())
+
+            saved_state = json.loads(
+                state.read_text(encoding="utf-8")
+            )
+            self.assertEqual(
+                saved_state["last_run_date"], "2026-10-10"
+            )
+            self.assertEqual(
+                saved_state["last_generated_date"], "2026-01-03"
+            )
+            self.assertEqual(saved_state["next_batch_index"], 1)
+
+            updated_fact_rows = generator.read_csv(fact)
+            updated_date_rows = generator.read_csv(dates)
+
+            self.assertEqual(
+                len(updated_fact_rows),
+                len(original_fact_rows) + 129,
+            )
+            self.assertEqual(
+                len(updated_date_rows),
+                len(original_date_rows) + 3,
+            )
+
+            generated_dates = {
+                generator.parse_date(row["order_date"])
+                for row in updated_fact_rows
+                if generator.parse_date(row["order_date"])
+                >= date(2026, 1, 1)
+            }
+            self.assertTrue(
+                {
+                    date(2026, 1, 1),
+                    date(2026, 1, 2),
+                    date(2026, 1, 3),
+                }.issubset(generated_dates)
+            )
+
+            # Run a second simulated day to verify persisted scheduling state.
+            with (
+                patch.object(generator, "ROOT", temp),
+                patch.object(generator, "RAW", raw),
+                patch.object(generator, "FACT_FILE", fact),
+                patch.object(generator, "DATE_FILE", dates),
+                patch.object(generator, "STATE_FILE", state),
+                patch.object(generator, "JOURNAL_FILE", journal),
+                patch.object(generator, "BATCH_PATTERN", (3, 3, 3, 4)),
+                patch.object(generator, "read_csv") as mock_read_csv,
+                patch.object(
+                    sys,
+                    "argv",
+                    [
+                        "incremental_data_generator.py",
+                        "--apply",
+                        "--today",
+                        "2026-10-11",
+                    ],
+                ),
+            ):
+                def read_table_second_run(path):
+                    path = Path(path)
+                    if path == raw / "dim_customer.csv":
+                        return customers
+                    if path == raw / "dim_product.csv":
+                        return products
+                    if path == raw / "dim_region.csv":
+                        return regions
+                    if path == fact:
+                        return real_read_csv(fact)
+                    if path == dates:
+                        return real_read_csv(dates)
+                    raise AssertionError(
+                        f"Unexpected CSV read: {path}"
+                    )
+
+                mock_read_csv.side_effect = read_table_second_run
+                second_result = generator.main()
+
+            self.assertEqual(second_result, 0)
+            self.assertFalse(journal.exists())
+
+            second_state = json.loads(
+                state.read_text(encoding="utf-8")
+            )
+            self.assertEqual(
+                second_state["last_run_date"], "2026-10-11"
+            )
+            self.assertEqual(
+                second_state["last_generated_date"], "2026-01-06"
+            )
+            self.assertEqual(second_state["next_batch_index"], 2)
+
+            final_fact_rows = real_read_csv(fact)
+            final_date_rows = real_read_csv(dates)
+
+            self.assertEqual(
+                len(final_fact_rows),
+                len(updated_fact_rows)
+                + second_state["last_generated_lines"],
+            )
+            self.assertEqual(
+                len(final_date_rows), len(original_date_rows) + 6
+            )
+
+            final_generated_dates = {
+                generator.parse_date(row["order_date"])
+                for row in final_fact_rows
+                if generator.parse_date(row["order_date"])
+                >= date(2026, 1, 1)
+            }
+            self.assertTrue(
+                {
+                    date(2026, 1, 4),
+                    date(2026, 1, 5),
+                    date(2026, 1, 6),
+                }.issubset(final_generated_dates)
+            )
 
 
 

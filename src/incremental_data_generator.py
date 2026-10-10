@@ -391,6 +391,34 @@ def recover_pending_journal() -> bool:
 
 
 
+def planned_batch_size(run_date: date, batch_index: int) -> int:
+    """Return the number of simulated dates for a scheduled run."""
+    if run_date >= date(2027, 1, 1):
+        return 1
+
+    return BATCH_PATTERN[batch_index % len(BATCH_PATTERN)]
+
+
+def plan_simulated_dates(
+    start_date: date,
+    run_date: date,
+    batch_index: int,
+) -> list[date]:
+    """Plan consecutive simulated dates subject to the 90-day cutoff."""
+    cutoff = run_date - timedelta(days=CUTOFF_DAYS)
+    requested_days = planned_batch_size(run_date, batch_index)
+
+    planned: list[date] = []
+    candidate = start_date
+
+    while len(planned) < requested_days and candidate <= cutoff:
+        planned.append(candidate)
+        candidate += timedelta(days=1)
+
+    return planned
+
+
+
 def load_state() -> dict:
     if not STATE_FILE.exists():
         return {"next_batch_index": 0, "last_run_date": None}
@@ -626,15 +654,13 @@ def main() -> int:
         print("No files were changed.")
         return 2
 
+
     batch_index = int(state["next_batch_index"]) % len(BATCH_PATTERN)
-    requested_days = BATCH_PATTERN[batch_index]
+    requested_days = planned_batch_size(today, batch_index)
+    eligible_days = plan_simulated_dates(
+        next_day, today, batch_index
+    )
 
-    eligible_days: list[date] = []
-    candidate = next_day
-
-    while len(eligible_days) < requested_days and candidate <= cutoff:
-        eligible_days.append(candidate)
-        candidate += timedelta(days=1)
 
     print("=" * 60)
     print("INCREMENTAL SALES GENERATOR")
@@ -926,8 +952,7 @@ def main() -> int:
 
         raise
 
-    # Clear the journal only after all writes and checks succeed.
-    JOURNAL_FILE.unlink()
+
 
 
 
