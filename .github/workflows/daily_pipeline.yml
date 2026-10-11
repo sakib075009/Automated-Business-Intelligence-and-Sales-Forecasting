@@ -7,7 +7,7 @@ on:
     - cron: "0 3 * * *"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: daily-bi-pipeline
@@ -15,13 +15,15 @@ concurrency:
 
 jobs:
   validate-and-analyze:
-    name: Validate Data and Run Analytics
+    name: Generate, Validate, Analyze, and Persist
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v7
@@ -39,14 +41,34 @@ jobs:
       - name: Validate source data
         run: python src/data_validation.py
 
+      - name: Generate incremental synthetic sales
+        run: python src/incremental_data_generator.py --apply
+
+      - name: Validate updated source data
+        run: python src/data_validation.py
+
       - name: Run complete analytics pipeline
         run: python src/run_analytics_pipeline.py
 
       - name: Upload analytics outputs
-        if: success()
         uses: actions/upload-artifact@v7
         with:
           name: bi-analytics-outputs
           path: data/outputs/
-          if-no-files-found: warn
+          if-no-files-found: error
           retention-days: 14
+
+      - name: Persist updated synthetic data and generator state
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add data/raw/fact_sales.csv data/raw/dim_date.csv
+          git add -f data/raw/incremental_generator_state.json
+
+          if git diff --cached --quiet; then
+            echo "No data or generator-state changes to persist."
+          else
+            git commit -m "Update synthetic sales data [skip ci]"
+            git push origin HEAD:main
+          fi
