@@ -28,7 +28,10 @@ jobs:
           cache-dependency-path: requirements.txt
 
       - name: Install dependencies
-        run: python -m pip install -r requirements.txt
+        shell: bash
+        run: |
+          grep -v -i '^pywinpty==' requirements.txt > /tmp/requirements-linux.txt
+          python -m pip install -r /tmp/requirements-linux.txt
 
       - name: Validate source data
         run: python src/data_validation.py
