@@ -32,3 +32,9 @@ src/incremental_data_generator_pre_recovery.py
 # Accidental local terminal-output file; keep out of Git
 
 /t PASS*
+
+# Generated analytics outputs (recreated by the pipeline)
+data/outputs/
+
+# Temporary source and test backups
+*.bak
