@@ -39,8 +39,8 @@ jobs:
       - name: Validate source data
         run: python src/data_validation.py
 
-      - name: Run analytics and forecasting
-        run: python src/analytics_engine.py
+      - name: Run complete analytics pipeline
+        run: python src/run_analytics_pipeline.py
 
       - name: Upload analytics outputs
         if: success()
