@@ -110,6 +110,28 @@
       padding: 23px;
     }
 
+    
+.dashboard-card {
+  overflow: hidden;
+  padding: 0;
+}
+
+.dashboard-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-bottom: 1px solid var(--border);
+}
+
+.dashboard-caption {
+  padding: 22px;
+}
+
+.dashboard-caption h3 {
+  margin-top: 0;
+}
+
+
     .metric {
       display: block;
       font-size: 2rem;
@@ -156,6 +178,7 @@
       <a class="brand" href="#home">AUTOMATED BI</a>
       <div class="nav-links">
         <a href="#overview">Overview</a>
+        <a href="#dashboard">Dashboard</a>
         <a href="#analytics">Analytics</a>
         <a href="#engineering">Engineering</a>
         <a href="#contact">Project links</a>
@@ -213,6 +236,39 @@
         </div>
       </div>
     </section>
+
+        
+<section class="container" id="dashboard">
+  <div class="eyebrow">Power BI report</div>
+  <h2>Explore the dashboard</h2>
+  <p class="section-intro">
+    An eight-page Business Intelligence report covering sales performance,
+    customer analytics, product and Pareto analysis, regional performance,
+    sales channels, promotions, and decision support.
+  </p>
+
+  <article class="card dashboard-card">
+    <a href="images/executive_overview.png" target="_blank" rel="noopener">
+      <img
+        src="images/executive_overview.png"
+        alt="Power BI Executive Overview showing revenue, profit, monthly sales trends, category performance, and regional comparisons"
+        loading="lazy"
+      >
+    </a>
+    <div class="dashboard-caption">
+      <h3>01 — Executive Overview</h3>
+      <p class="muted">
+        A consolidated view of revenue, profit, profit margin, order volume,
+        customer count, monthly revenue trends, category performance, and
+        regional revenue.
+      </p>
+      <a href="images/executive_overview.png" target="_blank" rel="noopener">
+        View full-size dashboard image →
+      </a>
+    </div>
+  </article>
+</section>
+
 
     <section class="container" id="analytics">
       <div class="eyebrow">Analytics and forecasting</div>
