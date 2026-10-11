@@ -4,8 +4,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="An end-to-end Business Intelligence and Sales Forecasting project using Python, Power BI, data validation, and GitHub Actions.">
+
+  <meta
+    name="description"
+    content="An end-to-end Business Intelligence and Sales Forecasting project using Python, Power BI, data validation, and GitHub Actions."
+  >
+
   <title>Automated BI | Sales Intelligence Platform</title>
+
   <style>
     :root {
       --bg: #0b1020;
@@ -17,8 +23,13 @@
       --border: #293650;
     }
 
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
 
     body {
       margin: 0;
@@ -28,10 +39,19 @@
       line-height: 1.7;
     }
 
-    a { color: var(--accent); text-decoration: none; }
-    a:hover { text-decoration: underline; }
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
 
-    .container { width: min(1080px, 90%); margin: auto; }
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .container {
+      width: min(1080px, 90%);
+      margin: auto;
+    }
 
     header {
       border-bottom: 1px solid var(--border);
@@ -46,27 +66,49 @@
       flex-wrap: wrap;
     }
 
-    .brand { font-weight: 800; letter-spacing: .3px; }
-    .nav-links { display: flex; gap: 22px; flex-wrap: wrap; }
+    .brand {
+      font-weight: 800;
+      letter-spacing: 0.3px;
+    }
 
-    .hero { padding: 90px 0 70px; }
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .hero {
+      padding: 80px 0 65px;
+    }
 
     .eyebrow {
       color: var(--accent);
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 2px;
-      font-size: .8rem;
+      font-size: 0.8rem;
     }
 
     h1 {
-      font-size: clamp(2.4rem, 6vw, 4.6rem);
-      line-height: 1.08;
+      font-size: clamp(2.4rem, 6vw, 4.5rem);
+      line-height: 1.1;
       max-width: 850px;
       margin: 18px 0;
     }
 
-    h1 span { color: var(--accent); }
+    h1 span {
+      color: var(--accent);
+    }
+
+    h2 {
+      font-size: clamp(1.7rem, 4vw, 2.4rem);
+      line-height: 1.25;
+      margin: 0 0 12px;
+    }
+
+    h3 {
+      line-height: 1.4;
+    }
 
     .lead {
       color: var(--muted);
@@ -74,7 +116,17 @@
       font-size: 1.12rem;
     }
 
-    .actions { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 28px; }
+    .section-intro {
+      color: var(--muted);
+      max-width: 760px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
 
     .button {
       display: inline-block;
@@ -90,15 +142,14 @@
       color: #07151a;
     }
 
-    section { padding: 55px 0; }
+    section {
+      padding: 48px 0;
+    }
 
-    h2 { font-size: clamp(1.7rem, 4vw, 2.4rem); margin: 0 0 12px; }
-    h3 { margin-top: 0; }
-    .section-intro { color: var(--muted); max-width: 760px; }
-
-    .metrics, .grid {
+    .metrics,
+    .info-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 18px;
       margin-top: 28px;
     }
@@ -106,31 +157,12 @@
     .card {
       background: var(--panel);
       border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 23px;
+      border-radius: 12px;
     }
 
-    
-.dashboard-card {
-  overflow: hidden;
-  padding: 0;
-}
-
-.dashboard-card img {
-  display: block;
-  width: 100%;
-  height: auto;
-  border-bottom: 1px solid var(--border);
-}
-
-.dashboard-caption {
-  padding: 22px;
-}
-
-.dashboard-caption h3 {
-  margin-top: 0;
-}
-
+    .content-card {
+      padding: 22px;
+    }
 
     .metric {
       display: block;
@@ -140,7 +172,10 @@
       line-height: 1.3;
     }
 
-    .muted { color: var(--muted); }
+    .muted {
+      color: var(--muted);
+    }
+
     .tag {
       display: inline-block;
       padding: 5px 10px;
@@ -148,7 +183,7 @@
       border: 1px solid var(--border);
       border-radius: 20px;
       color: var(--blue);
-      font-size: .86rem;
+      font-size: 0.86rem;
     }
 
     .notice {
@@ -159,54 +194,159 @@
       margin-top: 24px;
     }
 
+    /* Dashboard thumbnail gallery */
+
+    .dashboard-gallery {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 22px;
+      margin-top: 28px;
+      align-items: stretch;
+    }
+
+    .dashboard-card {
+      min-width: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    
+.dashboard-image-link {
+  display: block;
+  padding: 0;
+  background: #0b1020;
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.dashboard-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 0;
+  transition: opacity 0.2s ease;
+}
+
+.dashboard-image-link:hover img {
+  opacity: 0.85;
+}
+
+@media (max-width: 700px) {
+  .dashboard-card img {
+    aspect-ratio: 16 / 9;
+  }
+}
+
+
+    .dashboard-image-link:hover img {
+      opacity: 0.82;
+    }
+
+    .dashboard-caption {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .dashboard-caption h3 {
+      margin: 0 0 8px;
+      font-size: 1.05rem;
+    }
+
+    .dashboard-caption p {
+      font-size: 0.92rem;
+      margin: 0 0 14px;
+    }
+
+    .image-link {
+      display: inline-block;
+      margin-top: auto;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
     footer {
       border-top: 1px solid var(--border);
       padding: 30px 0;
       color: var(--muted);
-      font-size: .9rem;
+      font-size: 0.9rem;
+      margin-top: 30px;
     }
 
-    @media (max-width: 600px) {
-      .hero { padding-top: 60px; }
-      .nav-links { gap: 12px; }
+    @media (max-width: 700px) {
+      .dashboard-gallery {
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+
+      .dashboard-card img {
+        height: 220px;
+      }
+
+      .hero {
+        padding-top: 55px;
+      }
     }
   </style>
 </head>
+
 <body>
   <header>
     <nav class="container">
       <a class="brand" href="#home">AUTOMATED BI</a>
+
       <div class="nav-links">
         <a href="#overview">Overview</a>
-        <a href="#dashboard">Dashboard</a>
+        <a href="#dashboard">Dashboards</a>
         <a href="#analytics">Analytics</a>
         <a href="#engineering">Engineering</a>
-        <a href="#contact">Project links</a>
+        <a href="#resources">Resources</a>
       </div>
     </nav>
   </header>
 
   <main>
+    <!-- Hero -->
     <section class="hero container" id="home">
-      <div class="eyebrow">Business Intelligence · Data Analytics · Forecasting</div>
-      <h1>Turning sales data into <span>business decisions.</span></h1>
+      <div class="eyebrow">
+        Business Intelligence · Data Analytics · Forecasting
+      </div>
+
+      <h1>
+        Turning sales data into
+        <span>business decisions.</span>
+      </h1>
+
       <p class="lead">
         An end-to-end analytics platform combining data quality checks,
         business performance analysis, sales forecasting, Power BI reporting,
         and scheduled analytics through GitHub Actions.
       </p>
+
       <div class="actions">
-        <a class="button primary"
-           href="https://github.com/sakib075009/automated-bi-sales-forecasting">
+        <a
+          class="button primary"
+          href="https://github.com/sakib075009/automated-bi-sales-forecasting"
+        >
           Explore the repository →
         </a>
-        <a class="button" href="#analytics">Explore project results</a>
+
+        <a class="button" href="#dashboard">
+          Explore dashboards
+        </a>
       </div>
     </section>
 
+    <!-- Project overview -->
     <section class="container" id="overview">
       <div class="eyebrow">Project at a glance</div>
       <h2>Built around real business questions</h2>
+
       <p class="section-intro">
         The project analyzes historical sales, customers, products, regions,
         profitability, and purchasing behavior to support evidence-based
@@ -214,175 +354,403 @@
       </p>
 
       <div class="metrics">
-        <div class="card">
+        <div class="card content-card">
           <span class="metric">120,000</span>
           <strong>Historical sales records</strong>
-          <p class="muted">Dataset covering January 2024–December 2025.</p>
+          <p class="muted">
+            Dataset covering January 2024–December 2025.
+          </p>
         </div>
-        <div class="card">
+
+        <div class="card content-card">
           <span class="metric">8</span>
           <strong>Power BI report pages</strong>
-          <p class="muted">A multi-page business reporting experience.</p>
+          <p class="muted">
+            A multi-page business reporting experience.
+          </p>
         </div>
-        <div class="card">
+
+        <div class="card content-card">
           <span class="metric">22.51%</span>
           <strong>Forecast MAPE</strong>
-          <p class="muted">Seasonal-naive benchmark evaluated for January–June 2026.</p>
+          <p class="muted">
+            Seasonal-naive benchmark evaluated for January–June 2026.
+          </p>
         </div>
-        <div class="card">
+
+        <div class="card content-card">
           <span class="metric">Daily</span>
           <strong>Scheduled analytics</strong>
-          <p class="muted">GitHub Actions validates data and generates analytics outputs.</p>
+          <p class="muted">
+            GitHub Actions validates data and generates analytics outputs.
+          </p>
         </div>
       </div>
     </section>
 
-        
-<section class="container" id="dashboard">
-  <div class="eyebrow">Power BI report</div>
-  <h2>Explore the dashboard</h2>
-  <p class="section-intro">
-    An eight-page Business Intelligence report covering sales performance,
-    customer analytics, product and Pareto analysis, regional performance,
-    sales channels, promotions, and decision support.
-  </p>
+    <!-- Dashboard gallery -->
+    <section class="container" id="dashboard">
+      <div class="eyebrow">Power BI report</div>
+      <h2>Explore the dashboards</h2>
 
-  <article class="card dashboard-card">
-    <a href="images/executive_overview.png" target="_blank" rel="noopener">
-      <img
-        src="images/executive_overview.png"
-        alt="Power BI Executive Overview showing revenue, profit, monthly sales trends, category performance, and regional comparisons"
-        loading="lazy"
-      >
-    </a>
-    <div class="dashboard-caption">
-      <h3>01 — Executive Overview</h3>
-      <p class="muted">
-        A consolidated view of revenue, profit, profit margin, order volume,
-        customer count, monthly revenue trends, category performance, and
-        regional revenue.
+      <p class="section-intro">
+        Browse the report pages covering executive performance, revenue,
+        customer behavior, and other business analysis areas. Select any
+        thumbnail to open its full-size screenshot.
       </p>
-      <a href="images/executive_overview.png" target="_blank" rel="noopener">
-        View full-size dashboard image →
-      </a>
-    </div>
-  </article>
 
-  
-<article class="card dashboard-card">
-  <a href="images/revenue_analysis.png" target="_blank" rel="noopener">
-    <img
-      src="images/revenue_analysis.png"
-      alt="Power BI Sales and Revenue Analysis showing revenue, profit, order volume, and average order value"
-      loading="lazy"
-    >
-  </a>
-  <div class="dashboard-caption">
-    <h3>02 — Sales &amp; Revenue Analysis</h3>
-    <p class="muted">
-      Analyze monthly revenue and profit trends, total orders, average
-      order value, average quantity per order, and monthly order volume.
-      Revenue and profit growth indicators provide additional performance context.
-    </p>
-    <a href="images/revenue_analysis.png" target="_blank" rel="noopener">
-      View full-size dashboard image →
-    </a>
-  </div>
-</article>
+      <div class="dashboard-gallery">
 
-</section>
+        <!-- Dashboard 1 -->
+        <article class="card dashboard-card">
+          <a
+            class="dashboard-image-link"
+            href="images/executive_overview.png"
+            target="_blank"
+            rel="noopener"
+            aria-label="Open Executive Overview screenshot"
+          >
+            <img
+              src="images/executive_overview.png"
+              alt="Executive Overview Power BI dashboard with revenue, profit, monthly trends, categories, and regions"
+              loading="lazy"
+            >
+          </a>
+
+          <div class="dashboard-caption">
+            <h3>01 — Executive Overview</h3>
+            <p class="muted">
+              A consolidated view of revenue, profit, profit margin,
+              orders, customers, monthly trends, category performance,
+              and regional revenue.
+            </p>
+
+            <a
+              class="image-link"
+              href="images/executive_overview.png"
+              target="_blank"
+              rel="noopener"
+            >
+              View full-size image →
+            </a>
+          </div>
+        </article>
+
+        <!-- Dashboard 2 -->
+        <article class="card dashboard-card">
+          <a
+            class="dashboard-image-link"
+            href="images/revenue_analysis.png"
+            target="_blank"
+            rel="noopener"
+            aria-label="Open Sales and Revenue Analysis screenshot"
+          >
+            <img
+              src="images/revenue_analysis.png"
+              alt="Sales and Revenue Analysis dashboard with monthly revenue, profit, order volume, and average order value"
+              loading="lazy"
+            >
+          </a>
+
+          <div class="dashboard-caption">
+            <h3>02 — Sales &amp; Revenue Analysis</h3>
+            <p class="muted">
+              Analyze monthly revenue and profit trends, order volume,
+              average order value, average quantity per order, and
+              revenue and profit growth.
+            </p>
+
+            <a
+              class="image-link"
+              href="images/revenue_analysis.png"
+              target="_blank"
+              rel="noopener"
+            >
+              View full-size image →
+            </a>
+          </div>
+        </article>
+
+        <!-- Dashboard 3 -->
+        <article class="card dashboard-card">
+          <a
+            class="dashboard-image-link"
+            href="images/customer_analytics.png"
+            target="_blank"
+            rel="noopener"
+            aria-label="Open Customer Analytics screenshot"
+          >
+            <img
+              src="images/customer_analytics.png"
+              alt="Customer Analytics dashboard with behavior segments, repeat customers, age groups, tenure, and revenue contribution"
+              loading="lazy"
+            >
+          </a>
+
+          <div class="dashboard-caption">
+            <h3>03 — Customer Analytics</h3>
+            <p class="muted">
+              Explore customer behavior segments, repeat and one-time
+              customers, revenue contribution by behavior, revenue across
+              age groups, customer tenure, and concentration indicators.
+            </p>
+
+            <a
+              class="image-link"
+              href="images/customer_analytics.png"
+              target="_blank"
+              rel="noopener"
+            >
+              View full-size image →
+            </a>
+          </div>
+        </article>
+
+        
+        <!-- Dashboard 4 -->
+        <article class="card dashboard-card">
+          <a class="dashboard-image-link"
+             href="images/product_pareto.png"
+             target="_blank" rel="noopener">
+            <img src="images/product_pareto.png"
+                 alt="Product and Pareto Analysis dashboard"
+                 loading="lazy">
+          </a>
+          <div class="dashboard-caption">
+            <h3>04 — Product &amp; Pareto Analysis</h3>
+            <p class="muted">
+              Explore product revenue rankings, cumulative revenue
+              contribution, top-selling products, product margin bands,
+              and category profitability.
+            </p>
+            <a class="image-link"
+               href="images/product_pareto.png"
+               target="_blank" rel="noopener">
+              View full-size image →
+            </a>
+          </div>
+        </article>
+
+        <!-- Dashboard 5 -->
+        <article class="card dashboard-card">
+          <a class="dashboard-image-link"
+             href="images/regional_performance.png"
+             target="_blank" rel="noopener">
+            <img src="images/regional_performance.png"
+                 alt="Regional Performance dashboard"
+                 loading="lazy">
+          </a>
+          <div class="dashboard-caption">
+            <h3>05 — Regional Performance</h3>
+            <p class="muted">
+              Compare regional revenue, profit, profit margins,
+              revenue contribution, and customer-base relationships.
+            </p>
+            <a class="image-link"
+               href="images/regional_performance.png"
+               target="_blank" rel="noopener">
+              View full-size image →
+            </a>
+          </div>
+        </article>
+
+        <!-- Dashboard 6 -->
+        <article class="card dashboard-card">
+          <a class="dashboard-image-link"
+             href="images/channel_payment.png"
+             target="_blank" rel="noopener">
+            <img src="images/channel_payment.png"
+                 alt="Channel and Payment Analysis dashboard"
+                 loading="lazy">
+          </a>
+          <div class="dashboard-caption">
+            <h3>06 — Channel &amp; Payment Analysis</h3>
+            <p class="muted">
+              Analyze revenue and profit by sales channel, channel
+              profit margins, payment-method revenue share, and
+              order volume by payment method.
+            </p>
+            <a class="image-link"
+               href="images/channel_payment.png"
+               target="_blank" rel="noopener">
+              View full-size image →
+            </a>
+          </div>
+        </article>
+
+        <!-- Dashboard 7 -->
+        <article class="card dashboard-card">
+          <a class="dashboard-image-link"
+             href="images/promotion_discount.png"
+             target="_blank" rel="noopener">
+            <img src="images/promotion_discount.png"
+                 alt="Promotion and Discount Analysis dashboard"
+                 loading="lazy">
+          </a>
+          <div class="dashboard-caption">
+            <h3>07 — Promotion &amp; Discount Analysis</h3>
+            <p class="muted">
+              Evaluate promotional revenue, promotional share,
+              discount bands, average discount, and promotional
+              profitability relative to the overall margin.
+            </p>
+            <a class="image-link"
+               href="images/promotion_discount.png"
+               target="_blank" rel="noopener">
+              View full-size image →
+            </a>
+          </div>
+        </article>
+
+        <!-- Dashboard 8 -->
+        <article class="card dashboard-card">
+          <a class="dashboard-image-link"
+             href="images/decision_support.png"
+             target="_blank" rel="noopener">
+            <img src="images/decision_support.png"
+                 alt="Decision Support dashboard"
+                 loading="lazy">
+          </a>
+          <div class="dashboard-caption">
+            <h3>08 — Decision Support</h3>
+            <p class="muted">
+              Bring together business growth, profitability,
+              customer concentration, promotion efficiency,
+              and forecast evaluation to support decisions.
+            </p>
+            <a class="image-link"
+               href="images/decision_support.png"
+               target="_blank" rel="noopener">
+              View full-size image →
+            </a>
+          </div>
+        </article>
 
 
+      </div>
+    </section>
+
+    <!-- Analytics -->
     <section class="container" id="analytics">
       <div class="eyebrow">Analytics and forecasting</div>
       <h2>From descriptive analytics to forecasts</h2>
-      <div class="grid">
-        <article class="card">
+
+      <div class="info-grid">
+        <article class="card content-card">
           <h3>Sales performance</h3>
           <p class="muted">
             Examine revenue, profit, orders, monthly trends, regional results,
             product performance, and sales channels.
           </p>
         </article>
-        <article class="card">
+
+        <article class="card content-card">
           <h3>Customer and product insights</h3>
           <p class="muted">
-            Explore purchasing behavior, customer summaries, product popularity,
-            and differences across business segments.
+            Explore purchasing behavior, customer summaries, product
+            popularity, and differences across business segments.
           </p>
         </article>
-        <article class="card">
+
+        <article class="card content-card">
           <h3>Forecast evaluation</h3>
           <p class="muted">
             Compare forecasted and actual outcomes using MAE, RMSE, and MAPE.
-            The seasonal-naive model provides a benchmark for further improvement.
+            The seasonal-naive model provides a benchmark for further
+            improvement.
           </p>
         </article>
       </div>
+
       <div class="notice">
         Forecast metrics are evaluation results, not a guarantee of future
-        accuracy. Interpret them in the context of the evaluation period and
-        the underlying data.
+        accuracy. Interpret them in the context of the evaluation period
+        and the underlying data.
       </div>
     </section>
 
+    <!-- Engineering -->
     <section class="container" id="engineering">
       <div class="eyebrow">Data and automation engineering</div>
       <h2>Designed for repeatable analysis</h2>
+
       <p class="section-intro">
         The workflow combines source-data validation, analytics generation,
         forecasting outputs, and downloadable run artifacts.
       </p>
-      <div class="card">
+
+      <div class="card content-card">
         <h3>Technology stack</h3>
-        <div>
-          <span class="tag">Python</span>
-          <span class="tag">Pandas</span>
-          <span class="tag">NumPy</span>
-          <span class="tag">Scikit-learn</span>
-          <span class="tag">Power BI</span>
-          <span class="tag">DAX</span>
-          <span class="tag">Git</span>
-          <span class="tag">GitHub Actions</span>
-          <span class="tag">Data validation</span>
-          <span class="tag">Forecasting</span>
-        </div>
+
+        <span class="tag">Python</span>
+        <span class="tag">Pandas</span>
+        <span class="tag">NumPy</span>
+        <span class="tag">Scikit-learn</span>
+        <span class="tag">Power BI</span>
+        <span class="tag">DAX</span>
+        <span class="tag">Git</span>
+        <span class="tag">GitHub Actions</span>
+        <span class="tag">Data validation</span>
+        <span class="tag">Forecasting</span>
       </div>
-      <div class="grid">
-        <article class="card">
+
+      <div class="info-grid">
+        <article class="card content-card">
           <h3>1. Validate</h3>
-          <p class="muted">Check source data, keys, relationships, dates, and financial calculations.</p>
+          <p class="muted">
+            Check source data, keys, relationships, dates, and
+            financial calculations.
+          </p>
         </article>
-        <article class="card">
+
+        <article class="card content-card">
           <h3>2. Analyze</h3>
-          <p class="muted">Generate business summaries, visualizations, and forecast outputs.</p>
+          <p class="muted">
+            Generate business summaries, visualizations, and
+            forecast outputs.
+          </p>
         </article>
-        <article class="card">
+
+        <article class="card content-card">
           <h3>3. Publish artifacts</h3>
-          <p class="muted">Upload analytics outputs from successful GitHub Actions runs.</p>
+          <p class="muted">
+            Upload analytics outputs from successful GitHub Actions runs.
+          </p>
         </article>
       </div>
+
       <div class="notice">
-        Current automation runs against the existing repository dataset. Persistent
-        daily sales-data generation and automatic publication of refreshed data
-        are separate future steps, not yet enabled in production.
+        Current automation runs against the existing repository dataset.
+        Persistent daily sales-data generation and automatic publication
+        of refreshed data are separate future steps, not yet enabled
+        in production.
       </div>
     </section>
 
-    <section class="container" id="contact">
+    <!-- Project resources -->
+    <section class="container" id="resources">
       <div class="eyebrow">Explore the work</div>
       <h2>Project resources</h2>
-      <div class="grid">
-        <article class="card">
+
+      <div class="info-grid">
+        <article class="card content-card">
           <h3>Source code and documentation</h3>
-          <p class="muted">Review the project structure, implementation, and setup instructions.</p>
+          <p class="muted">
+            Review the project structure, implementation, and
+            setup instructions.
+          </p>
+
           <a href="https://github.com/sakib075009/automated-bi-sales-forecasting">
             Open GitHub repository →
           </a>
         </article>
-        <article class="card">
+
+        <article class="card content-card">
           <h3>Automation history</h3>
-          <p class="muted">Inspect workflow runs and download generated analytics artifacts.</p>
+          <p class="muted">
+            Inspect workflow runs and download generated analytics artifacts.
+          </p>
+
           <a href="https://github.com/sakib075009/automated-bi-sales-forecasting/actions">
             View GitHub Actions →
           </a>
@@ -393,7 +761,11 @@
 
   <footer>
     <div class="container">
-      <p><strong>Automated Business Intelligence &amp; Sales Forecasting Platform</strong></p>
+      <p>
+        <strong>
+          Automated Business Intelligence &amp; Sales Forecasting Platform
+        </strong>
+      </p>
       <p>Built with Python, Power BI, and GitHub Actions.</p>
       <p>Project portfolio · 2026</p>
     </div>
