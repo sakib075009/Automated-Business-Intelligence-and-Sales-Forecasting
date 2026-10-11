@@ -28,16 +28,9 @@ jobs:
           cache-dependency-path: requirements.txt
 
       - name: Install dependencies
-        shell: bash
         run: |
-          set -euxo pipefail
-          grep -vi '^pywinpty==' requirements.txt > /tmp/requirements-linux.txt
-          echo "Requirements to install:"
-          wc -l /tmp/requirements-linux.txt
-          python -m pip install -r /tmp/requirements-linux.txt
-          echo "Python executable:"
-          python -c "import sys; print(sys.executable)"
-          echo "Verify core packages:"
+          python -m pip install --upgrade pip
+          python -m pip install pandas numpy matplotlib openpyxl scikit-learn scipy seaborn statsmodels PyYAML
           python -c "import pandas, numpy; print('pandas:', pandas.__version__); print('numpy:', numpy.__version__)"
 
       - name: Validate source data
