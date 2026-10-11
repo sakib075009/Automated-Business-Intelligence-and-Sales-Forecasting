@@ -1,0 +1,15 @@
+{
+  "next_batch_index": 1,
+  "last_run_date": "2026-10-12",
+  "source_hashes": {
+    "fact_sales": "ef9babb728d0288752efd02713a5a4439a81e221660ef8bcf24ceb0f5f6858c1",
+    "dim_date": "217be3b8e1b318b4602dfa1b954431ac754ba4b3fd5c3b4b442591f31e4c8c52"
+  },
+  "last_generated_date": "2026-01-03",
+  "last_generated_lines": 129,
+  "daily_line_counts": {
+    "2026-01-01": 43,
+    "2026-01-02": 40,
+    "2026-01-03": 46
+  }
+}
