@@ -419,6 +419,26 @@ def plan_simulated_dates(
 
 
 
+def validate_source_integrity(source_hashes: dict) -> None:
+    """Stop if tracked source CSVs differ from the last successful batch."""
+    expected_keys = {"fact_sales", "dim_date"}
+
+    if not isinstance(source_hashes, dict) or set(source_hashes) != expected_keys:
+        raise ValueError("Invalid source-integrity metadata in generator state.")
+
+    actual_hashes = {
+        "fact_sales": sha256_file(FACT_FILE),
+        "dim_date": sha256_file(DATE_FILE),
+    }
+
+    if actual_hashes != source_hashes:
+        raise RuntimeError(
+            "Source-integrity check failed: fact_sales.csv or "
+            "dim_date.csv changed since the last successful batch. "
+            "No new batch was generated. Inspect the files and state."
+        )
+
+
 def load_state() -> dict:
     if not STATE_FILE.exists():
         return {"next_batch_index": 0, "last_run_date": None}
@@ -647,7 +667,27 @@ def main() -> int:
         else FIRST_SIMULATED_DATE
     )
 
+    state_file_existed = STATE_FILE.exists()
     state = load_state()
+
+    # Fail closed if a previously tracked source table has changed.
+    if state_file_existed:
+        source_hashes = state.get("source_hashes")
+
+        if not isinstance(source_hashes, dict):
+            raise ValueError(
+                "Existing generator state has no source-integrity hashes. "
+                "Verify the source data and explicitly initialize a new "
+                "baseline before continuing."
+            )
+
+        expected_source_keys = {"fact_sales", "dim_date"}
+        if set(source_hashes) != expected_source_keys:
+            raise ValueError(
+                "Generator state contains invalid source-integrity metadata."
+            )
+
+        validate_source_integrity(source_hashes)
 
     if args.apply and state.get("last_run_date") == today.isoformat():
         print("STOP: An apply run has already completed today.")
@@ -873,6 +913,10 @@ def main() -> int:
 
     # Update state only as part of the successful write sequence.
     updated_state = dict(state)
+    updated_state["source_hashes"] = {
+        "fact_sales": sha256_csv_rows(combined_sales, FACT_COLUMNS),
+        "dim_date": sha256_csv_rows(updated_date_rows, DATE_COLUMNS),
+    }
     updated_state["next_batch_index"] = (
         batch_index + 1
     ) % len(BATCH_PATTERN)

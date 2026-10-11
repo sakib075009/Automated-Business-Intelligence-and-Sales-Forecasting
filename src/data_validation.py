@@ -102,6 +102,9 @@ EXPECTED_ROW_COUNTS = {
     "fact_sales": 120000,
 }
 
+# These tables may grow as new sales dates are ingested.
+GROWING_TABLES = {"dim_date", "fact_sales"}
+
 
 # ============================================================
 # PRIMARY KEYS
@@ -246,31 +249,31 @@ def check_columns(data):
 # ============================================================
 
 def check_row_counts(data):
-    """Check expected row counts."""
+    """Check fixed table counts and minimum counts for growing tables."""
 
     print("\n=== ROW COUNT CHECK ===")
-
     all_passed = True
 
     for table_name, expected_count in EXPECTED_ROW_COUNTS.items():
-
         actual_count = len(data[table_name])
 
-        if actual_count == expected_count:
-
-            print(
-                f"PASS | {table_name}: "
-                f"{actual_count:,} rows"
-            )
-
+        if table_name in GROWING_TABLES:
+            passed = actual_count >= expected_count
+            requirement = f"at least {expected_count:,}"
         else:
+            passed = actual_count == expected_count
+            requirement = f"exactly {expected_count:,}"
 
+        if passed:
             print(
-                f"FAIL | {table_name}: "
-                f"expected {expected_count:,}, "
+                f"PASS | {table_name}: {actual_count:,} rows "
+                f"(expected {requirement})"
+            )
+        else:
+            print(
+                f"FAIL | {table_name}: expected {requirement} rows, "
                 f"found {actual_count:,}"
             )
-
             all_passed = False
 
     return all_passed
@@ -518,9 +521,8 @@ def check_business_rules(data):
     max_date = fact_sales["order_date"].max()
 
     expected_min_date = pd.Timestamp("2024-01-01")
-    expected_max_date = pd.Timestamp("2025-12-31")
 
-    if min_date == expected_min_date and max_date == expected_max_date:
+    if min_date == expected_min_date and max_date >= expected_min_date:
 
         print(
             f"PASS | Sales date range: "

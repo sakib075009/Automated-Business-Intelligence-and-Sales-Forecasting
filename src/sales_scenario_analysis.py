@@ -110,13 +110,10 @@ def load_sales_data():
 # ============================================================
 
 def select_analysis_period(sales):
-    """Select the latest 12 calendar months represented in the data."""
+    """Select calendar-year 2025 for a stable, reproducible scenario comparison."""
 
-    latest_month = sales["order_date"].max().to_period("M")
-    first_month = latest_month - 11
-
-    start_date = first_month.start_time
-    end_date = latest_month.end_time.normalize()
+    start_date = pd.Timestamp("2025-01-01")
+    end_date = pd.Timestamp("2025-12-31")
 
     period_sales = sales.loc[
         sales["order_date"].between(start_date, end_date)

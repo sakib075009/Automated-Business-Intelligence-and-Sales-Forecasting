@@ -481,6 +481,50 @@ class TestIncrementalRecovery(unittest.TestCase):
             self.assertTrue(journal.exists())
 
 
+    def test_source_integrity_rejects_modified_source_files(self):
+        for source_name in ("fact_sales", "dim_date"):
+            with self.subTest(source=source_name):
+                with tempfile.TemporaryDirectory() as temp_dir:
+                    temp = Path(temp_dir)
+                    fact = temp / "fact_sales.csv"
+                    dates = temp / "dim_date.csv"
+
+                    fact.write_bytes(b"baseline sales\\n")
+                    dates.write_bytes(b"baseline dates\\n")
+
+                    expected_hashes = {
+                        "fact_sales": file_hash(fact),
+                        "dim_date": file_hash(dates),
+                    }
+
+                    with (
+                        patch.object(generator, "FACT_FILE", fact),
+                        patch.object(generator, "DATE_FILE", dates),
+                    ):
+                        # An unchanged baseline must pass.
+                        generator.validate_source_integrity(expected_hashes)
+
+                        target = fact if source_name == "fact_sales" else dates
+                        original_fact = fact.read_bytes()
+                        original_dates = dates.read_bytes()
+                        target.write_bytes(target.read_bytes() + b"unexpected change\\n")
+
+                        with self.assertRaisesRegex(
+                            RuntimeError, "Source-integrity check failed"
+                        ):
+                            generator.validate_source_integrity(expected_hashes)
+
+                        # The check detects tampering; it does not rewrite files.
+                        self.assertEqual(fact.read_bytes(), (
+                            original_fact + b"unexpected change\\n"
+                            if source_name == "fact_sales" else original_fact
+                        ))
+                        self.assertEqual(dates.read_bytes(), (
+                            original_dates + b"unexpected change\\n"
+                            if source_name == "dim_date" else original_dates
+                        ))
+
+
     def test_successful_run_persists_state(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             temp = Path(temp_dir)
@@ -567,6 +611,17 @@ class TestIncrementalRecovery(unittest.TestCase):
             saved_state = json.loads(
                 state.read_text(encoding="utf-8")
             )
+
+            self.assertEqual(
+                saved_state["source_hashes"]["fact_sales"],
+                generator.sha256_file(fact),
+            )
+
+            self.assertEqual(
+                saved_state["source_hashes"]["dim_date"],
+                generator.sha256_file(dates),
+            )
+
             self.assertEqual(
                 saved_state["last_run_date"], "2026-10-10"
             )
@@ -574,6 +629,7 @@ class TestIncrementalRecovery(unittest.TestCase):
                 saved_state["last_generated_date"], "2026-01-03"
             )
             self.assertEqual(saved_state["next_batch_index"], 1)
+
 
             updated_fact_rows = generator.read_csv(fact)
             updated_date_rows = generator.read_csv(dates)
@@ -647,6 +703,17 @@ class TestIncrementalRecovery(unittest.TestCase):
             second_state = json.loads(
                 state.read_text(encoding="utf-8")
             )
+
+            self.assertEqual(
+                second_state["source_hashes"]["fact_sales"],
+                generator.sha256_file(fact),
+            )
+
+            self.assertEqual(
+                second_state["source_hashes"]["dim_date"],
+                generator.sha256_file(dates),
+            )
+
             self.assertEqual(
                 second_state["last_run_date"], "2026-10-11"
             )

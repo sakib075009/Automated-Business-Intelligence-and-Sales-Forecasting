@@ -192,11 +192,22 @@ def main():
                     "Anomaly output has one row per date",
                 )
 
+                source_dates = pd.to_datetime(
+                    pd.read_csv(
+                        SALES_FILE,
+                        usecols=["order_date"],
+                    )["order_date"],
+                    errors="coerce",
+                ).dropna().dt.normalize().drop_duplicates()
+
+                anomaly_dates = dates.dt.normalize().drop_duplicates()
+
                 check(
-                    dates.min() == pd.Timestamp("2024-01-01")
-                    and dates.max() == pd.Timestamp("2025-12-31")
-                    and len(dates) == 731,
-                    "Anomaly output covers the full 731-day historical period",
+                    dates.notna().all()
+                    and source_dates.min() == anomaly_dates.min()
+                    and source_dates.max() == anomaly_dates.max()
+                    and set(source_dates) == set(anomaly_dates),
+                    "Anomaly output covers every date in the source sales data",
                 )
 
         if "daily_revenue" in anomalies.columns:
