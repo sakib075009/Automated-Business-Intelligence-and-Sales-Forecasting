@@ -226,10 +226,15 @@ def sha256_bytes(content: bytes) -> str:
 def sha256_csv_rows(
     rows: list[dict[str, str]],
     columns: list[str],
+    lineterminator: str = "\r\n",
 ) -> str:
-    """Hash the CSV content exactly as the CSV writer would produce it."""
+    """Hash CSV rows with an explicit, deterministic line terminator."""
     buffer = io.StringIO(newline="")
-    writer = csv.DictWriter(buffer, fieldnames=columns)
+    writer = csv.DictWriter(
+        buffer,
+        fieldnames=columns,
+        lineterminator=lineterminator,
+    )
     writer.writeheader()
     writer.writerows(rows)
     return sha256_bytes(buffer.getvalue().encode("utf-8"))
@@ -418,25 +423,37 @@ def plan_simulated_dates(
     return planned
 
 
-
 def validate_source_integrity(source_hashes: dict) -> None:
-    """Stop if tracked source CSVs differ from the last successful batch."""
+    """Validate source data across Windows and Linux line-ending conventions."""
     expected_keys = {"fact_sales", "dim_date"}
 
     if not isinstance(source_hashes, dict) or set(source_hashes) != expected_keys:
         raise ValueError("Invalid source-integrity metadata in generator state.")
 
-    actual_hashes = {
-        "fact_sales": sha256_file(FACT_FILE),
-        "dim_date": sha256_file(DATE_FILE),
-    }
+    fact_rows = read_csv(FACT_FILE)
+    date_rows = read_csv(DATE_FILE)
 
-    if actual_hashes != source_hashes:
-        raise RuntimeError(
-            "Source-integrity check failed: fact_sales.csv or "
-            "dim_date.csv changed since the last successful batch. "
-            "No new batch was generated. Inspect the files and state."
-        )
+    if fact_rows and list(fact_rows[0].keys()) != FACT_COLUMNS:
+        raise ValueError("The sales fact columns do not match the expected schema.")
+
+    if date_rows and list(date_rows[0].keys()) != DATE_COLUMNS:
+        raise ValueError("The date dimension columns do not match the expected schema.")
+
+    for name, rows, columns in (
+        ("fact_sales", fact_rows, FACT_COLUMNS),
+        ("dim_date", date_rows, DATE_COLUMNS),
+    ):
+        accepted_hashes = {
+            sha256_csv_rows(rows, columns, "\n"),
+            sha256_csv_rows(rows, columns, "\r\n"),
+        }
+
+        if source_hashes[name] not in accepted_hashes:
+            raise RuntimeError(
+                f"Source-integrity check failed for {name}.csv: "
+                "data differs from the last successful batch. "
+                "No new batch was generated."
+            )
 
 
 def load_state() -> dict:

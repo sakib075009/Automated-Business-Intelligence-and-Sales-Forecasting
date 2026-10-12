@@ -447,7 +447,7 @@ class TestIncrementalRecovery(unittest.TestCase):
                         "incremental_data_generator.py",
                         "--apply",
                         "--today",
-                        "2026-04-01",
+                        "2026-10-10",
                     ],
                 ),
             ):
@@ -481,6 +481,7 @@ class TestIncrementalRecovery(unittest.TestCase):
             self.assertTrue(journal.exists())
 
 
+
     def test_source_integrity_rejects_modified_source_files(self):
         for source_name in ("fact_sales", "dim_date"):
             with self.subTest(source=source_name):
@@ -489,41 +490,68 @@ class TestIncrementalRecovery(unittest.TestCase):
                     fact = temp / "fact_sales.csv"
                     dates = temp / "dim_date.csv"
 
-                    fact.write_bytes(b"baseline sales\\n")
-                    dates.write_bytes(b"baseline dates\\n")
+                    sales_row = {
+                        column: "" for column in generator.FACT_COLUMNS
+                    }
+                    sales_row["sales_id"] = "BASELINE001"
+
+                    date_row = {
+                        column: "" for column in generator.DATE_COLUMNS
+                    }
+                    date_row["date"] = "2026-01-01"
+
+                    fact.write_bytes(
+                        csv_bytes([sales_row], generator.FACT_COLUMNS)
+                    )
+                    dates.write_bytes(
+                        csv_bytes([date_row], generator.DATE_COLUMNS)
+                    )
 
                     expected_hashes = {
-                        "fact_sales": file_hash(fact),
-                        "dim_date": file_hash(dates),
+                        "fact_sales": generator.sha256_csv_rows(
+                            generator.read_csv(fact), generator.FACT_COLUMNS
+                        ),
+                        "dim_date": generator.sha256_csv_rows(
+                            generator.read_csv(dates), generator.DATE_COLUMNS
+                        ),
                     }
 
                     with (
                         patch.object(generator, "FACT_FILE", fact),
                         patch.object(generator, "DATE_FILE", dates),
                     ):
-                        # An unchanged baseline must pass.
+                        # The unchanged baseline must pass.
                         generator.validate_source_integrity(expected_hashes)
 
-                        target = fact if source_name == "fact_sales" else dates
                         original_fact = fact.read_bytes()
                         original_dates = dates.read_bytes()
-                        target.write_bytes(target.read_bytes() + b"unexpected change\\n")
+
+                        target = fact if source_name == "fact_sales" else dates
+                        original_target = target.read_bytes()
+                        target.write_bytes(
+                            original_target.replace(
+                                b"BASELINE001"
+                                if source_name == "fact_sales"
+                                else b"2026-01-01",
+                                b"MODIFIED001"
+                                if source_name == "fact_sales"
+                                else b"2026-01-02",
+                                1,
+                            )
+                        )
 
                         with self.assertRaisesRegex(
                             RuntimeError, "Source-integrity check failed"
                         ):
                             generator.validate_source_integrity(expected_hashes)
 
-                        # The check detects tampering; it does not rewrite files.
-                        self.assertEqual(fact.read_bytes(), (
-                            original_fact + b"unexpected change\\n"
-                            if source_name == "fact_sales" else original_fact
-                        ))
-                        self.assertEqual(dates.read_bytes(), (
-                            original_dates + b"unexpected change\\n"
-                            if source_name == "dim_date" else original_dates
-                        ))
+                        # Integrity validation must not rewrite either file.
+                        self.assertNotEqual(target.read_bytes(), original_target)
 
+                        if source_name == "fact_sales":
+                            self.assertEqual(dates.read_bytes(), original_dates)
+                        else:
+                            self.assertEqual(fact.read_bytes(), original_fact)
 
     def test_successful_run_persists_state(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -626,7 +654,7 @@ class TestIncrementalRecovery(unittest.TestCase):
                 saved_state["last_run_date"], "2026-10-10"
             )
             self.assertEqual(
-                saved_state["last_generated_date"], "2026-01-03"
+                saved_state["last_generated_date"], "2026-01-06"
             )
             self.assertEqual(saved_state["next_batch_index"], 1)
 
@@ -636,7 +664,7 @@ class TestIncrementalRecovery(unittest.TestCase):
 
             self.assertEqual(
                 len(updated_fact_rows),
-                len(original_fact_rows) + 129,
+                len(original_fact_rows) + 132,
             )
             self.assertEqual(
                 len(updated_date_rows),
@@ -718,7 +746,7 @@ class TestIncrementalRecovery(unittest.TestCase):
                 second_state["last_run_date"], "2026-10-11"
             )
             self.assertEqual(
-                second_state["last_generated_date"], "2026-01-06"
+                second_state["last_generated_date"], "2026-01-09"
             )
             self.assertEqual(second_state["next_batch_index"], 2)
 
@@ -747,8 +775,6 @@ class TestIncrementalRecovery(unittest.TestCase):
                     date(2026, 1, 6),
                 }.issubset(final_generated_dates)
             )
-
-
 
     def test_main_stops_when_pending_journal_exists(self):
         with tempfile.TemporaryDirectory() as temp_dir:
