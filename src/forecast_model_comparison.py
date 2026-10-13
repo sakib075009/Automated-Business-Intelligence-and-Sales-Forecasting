@@ -23,7 +23,7 @@ COMPARISON_FILE = (
 )
 
 HOLDOUT_START = "2025-01-01"
-HOLDOUT_END = "2025-06-01"
+HOLDOUT_END = "2025-12-01"
 
 
 # ============================================================
@@ -207,9 +207,9 @@ def main():
         & (monthly.index <= test_end)
     ]
 
-    if len(actual) != 6:
+    if len(actual) != 12:
         raise ValueError(
-            f"Expected 6 holdout months; found {len(actual)}."
+            f"Expected 12 holdout months; found {len(actual)}."
         )
 
     if len(train) < 12:

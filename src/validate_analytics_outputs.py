@@ -30,6 +30,10 @@ MONTHLY_DETAILS_FILE = (
 )
 BUSINESS_KPI_FILE = OUTPUT_DIR / "business_kpi_summary.csv"
 BUSINESS_INSIGHTS_FILE = OUTPUT_DIR / "business_insights.csv"
+DEMAND_PERIODS_FILE = OUTPUT_DIR / "demand_period_analysis.csv"
+PRODUCT_DEMAND_FILE = OUTPUT_DIR / "product_demand_priorities.csv"
+REGIONAL_DEMAND_FILE = OUTPUT_DIR / "regional_demand_priorities.csv"
+DEMAND_RECOMMENDATIONS_FILE = OUTPUT_DIR / "demand_planning_recommendations.csv"
 
 # ============================================================
 # 2. VALIDATION HELPERS
@@ -581,6 +585,228 @@ def main():
                 .ne("")
                 .all(),
                 "Business insight messages are not empty",
+            )
+
+    # --------------------------------------------------------
+    # Demand planning outputs
+    # --------------------------------------------------------
+
+    demand_periods = read_output(
+        DEMAND_PERIODS_FILE,
+        "Demand period analysis",
+    )
+
+    product_demand = read_output(
+        PRODUCT_DEMAND_FILE,
+        "Product demand priorities",
+    )
+
+    regional_demand = read_output(
+        REGIONAL_DEMAND_FILE,
+        "Regional demand priorities",
+    )
+
+    demand_recommendations = read_output(
+        DEMAND_RECOMMENDATIONS_FILE,
+        "Demand planning recommendations",
+    )
+
+    if demand_periods is not None:
+        check_columns(
+            demand_periods,
+            ["month", "quantity", "demand_period"],
+            "Demand period analysis",
+        )
+
+        if {"month", "quantity", "demand_period"}.issubset(
+            demand_periods.columns
+        ):
+            months = pd.to_datetime(
+                demand_periods["month"],
+                errors="coerce",
+            )
+            quantities = pd.to_numeric(
+                demand_periods["quantity"],
+                errors="coerce",
+            )
+
+            check(
+                months.notna().all(),
+                "Demand periods contain valid dates",
+            )
+
+            check(
+                months.is_unique,
+                "Demand periods contain unique months",
+            )
+
+            check(
+                quantities.notna().all()
+                and np.isfinite(quantities.to_numpy()).all()
+                and (quantities >= 0).all(),
+                "Demand quantities are finite and non-negative",
+            )
+
+            check(
+                demand_periods["demand_period"].isin(
+                    ["High", "Low", "Typical"]
+                ).all(),
+                "Demand period classifications are valid",
+            )
+
+    if product_demand is not None:
+        check_columns(
+            product_demand,
+            [
+                "product_id",
+                "quantity",
+                "revenue",
+                "profit",
+                "quantity_rank",
+                "demand_priority",
+            ],
+            "Product demand priorities",
+        )
+
+        required = {
+            "product_id",
+            "quantity",
+            "revenue",
+            "profit",
+            "quantity_rank",
+            "demand_priority",
+        }
+
+        if required.issubset(product_demand.columns):
+            check(
+                product_demand["product_id"].notna().all()
+                and product_demand["product_id"].is_unique,
+                "Product demand output has unique product IDs",
+            )
+
+            product_quantities = pd.to_numeric(
+                product_demand["quantity"],
+                errors="coerce",
+            )
+
+            product_ranks = pd.to_numeric(
+                product_demand["quantity_rank"],
+                errors="coerce",
+            )
+
+            check(
+                product_quantities.notna().all()
+                and np.isfinite(product_quantities.to_numpy()).all()
+                and (product_quantities >= 0).all(),
+                "Product quantities are finite and non-negative",
+            )
+
+            check(
+                product_ranks.notna().all()
+                and np.isfinite(product_ranks.to_numpy()).all()
+                and (product_ranks >= 1).all()
+                and (product_ranks <= len(product_demand)).all()
+                and (product_ranks == product_ranks.astype(int)).all(),
+                "Product quantity ranks are valid positive integers",
+            )
+
+            check(
+                product_demand["demand_priority"].isin(
+                    ["High", "Standard", "Low"]
+                ).all(),
+                "Product demand priorities are valid",
+            )
+
+    if regional_demand is not None:
+        check_columns(
+            regional_demand,
+            [
+                "region_id",
+                "quantity",
+                "revenue",
+                "profit",
+                "quantity_rank",
+                "demand_priority",
+            ],
+            "Regional demand priorities",
+        )
+
+        required = {
+            "region_id",
+            "quantity",
+            "revenue",
+            "profit",
+            "quantity_rank",
+            "demand_priority",
+        }
+
+        if required.issubset(regional_demand.columns):
+            check(
+                regional_demand["region_id"].notna().all()
+                and regional_demand["region_id"].is_unique,
+                "Regional demand output has unique region IDs",
+            )
+
+            region_quantities = pd.to_numeric(
+                regional_demand["quantity"],
+                errors="coerce",
+            )
+
+            check(
+                region_quantities.notna().all()
+                and np.isfinite(region_quantities.to_numpy()).all()
+                and (region_quantities >= 0).all(),
+                "Regional quantities are finite and non-negative",
+            )
+
+            check(
+                regional_demand["demand_priority"].isin(
+                    ["High", "Low", "Typical"]
+                ).all(),
+                "Regional demand priorities are valid",
+            )
+
+    if demand_recommendations is not None:
+        check_columns(
+            demand_recommendations,
+            [
+                "area",
+                "priority",
+                "finding",
+                "recommended_action",
+                "evidence",
+            ],
+            "Demand planning recommendations",
+        )
+
+        required_text_columns = [
+            "area",
+            "priority",
+            "finding",
+            "recommended_action",
+            "evidence",
+        ]
+
+        if set(required_text_columns).issubset(
+            demand_recommendations.columns
+        ):
+            text_values = (
+                demand_recommendations[required_text_columns]
+                .astype("string")
+                .apply(lambda column: column.str.strip())
+            )
+
+            check(
+                text_values.notna().all().all()
+                and text_values.ne("").all().all(),
+                "Demand planning recommendation fields are populated",
+            )
+
+            check(
+                demand_recommendations["priority"].isin(
+                    ["Review", "Data needed"]
+                ).all(),
+                "Demand planning recommendation priorities are valid",
             )
 
     # --------------------------------------------------------

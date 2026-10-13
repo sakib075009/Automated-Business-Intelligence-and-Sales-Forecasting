@@ -32,6 +32,14 @@ PIPELINE_STEPS = [
         "Business Insights Engine",
         "src/business_insights_engine.py",
     ),
+        (
+        "Demand Planning Analysis",
+        "src/demand_planning_analysis.py",
+    ),
+    (
+        "Forecast Visualizations",
+        "src/forecast_visualizations.py",
+    ),
     (
         "Analytics Output Validation",
         "src/validate_analytics_outputs.py",

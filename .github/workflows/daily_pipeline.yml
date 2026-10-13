@@ -4,7 +4,8 @@ name: Daily BI Pipeline
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 3 * * *"
+    - cron: "17 1 * * *"
+      timezone: "Asia/Dhaka"
 
 permissions:
   contents: write
