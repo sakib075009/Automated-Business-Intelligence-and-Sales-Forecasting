@@ -41,6 +41,10 @@ PIPELINE_STEPS = [
         "src/forecast_visualizations.py",
     ),
     (
+        "AI Analytics MVP",
+        "src/ai_analytics_mvp.py",
+    ),
+    (
         "Analytics Output Validation",
         "src/validate_analytics_outputs.py",
     ),

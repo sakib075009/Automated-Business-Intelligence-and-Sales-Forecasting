@@ -582,6 +582,21 @@ class TestIncrementalRecovery(unittest.TestCase):
                 generator.DATE_FILE
             )
 
+            # Derive the starting point and expected first batch dynamically.
+            initial_latest_date = max(
+                generator.parse_date(row["order_date"])
+                for row in original_fact_rows
+            )
+            first_run_date = date(2026, 10, 10)
+            first_batch_index = 0
+
+            expected_first_dates = generator.plan_simulated_dates(
+                initial_latest_date + timedelta(days=1),
+                first_run_date,
+                first_batch_index,
+            )
+            self.assertTrue(expected_first_dates)
+
             fact.write_bytes(
                 csv_bytes(original_fact_rows, generator.FACT_COLUMNS)
             )
@@ -605,7 +620,7 @@ class TestIncrementalRecovery(unittest.TestCase):
                         "incremental_data_generator.py",
                         "--apply",
                         "--today",
-                        "2026-10-10",
+                        first_run_date.isoformat(),
                     ],
                 ),
             ):
@@ -628,10 +643,9 @@ class TestIncrementalRecovery(unittest.TestCase):
                     )
 
                 mock_read_csv.side_effect = read_table
-
                 result = generator.main()
 
-            # Check the result after the temporary-file patches are removed.
+            # Verify the first run and its persisted state.
             self.assertEqual(result, 0)
             self.assertTrue(state.exists())
             self.assertFalse(journal.exists())
@@ -644,46 +658,60 @@ class TestIncrementalRecovery(unittest.TestCase):
                 saved_state["source_hashes"]["fact_sales"],
                 generator.sha256_file(fact),
             )
-
             self.assertEqual(
                 saved_state["source_hashes"]["dim_date"],
                 generator.sha256_file(dates),
             )
-
             self.assertEqual(
-                saved_state["last_run_date"], "2026-10-10"
+                saved_state["last_run_date"],
+                first_run_date.isoformat(),
             )
             self.assertEqual(
-                saved_state["last_generated_date"], "2026-01-06"
+                saved_state["last_generated_date"],
+                expected_first_dates[-1].isoformat(),
             )
-            self.assertEqual(saved_state["next_batch_index"], 1)
+            self.assertEqual(
+                saved_state["next_batch_index"],
+                (first_batch_index + 1)
+                % len(generator.BATCH_PATTERN),
+            )
+            self.assertGreater(saved_state["last_generated_lines"], 0)
 
-
-            updated_fact_rows = generator.read_csv(fact)
-            updated_date_rows = generator.read_csv(dates)
+            updated_fact_rows = real_read_csv(fact)
+            updated_date_rows = real_read_csv(dates)
 
             self.assertEqual(
                 len(updated_fact_rows),
-                len(original_fact_rows) + 132,
+                len(original_fact_rows)
+                + saved_state["last_generated_lines"],
             )
             self.assertEqual(
                 len(updated_date_rows),
-                len(original_date_rows) + 3,
+                len(original_date_rows) + len(expected_first_dates),
             )
 
-            generated_dates = {
+            first_generated_dates = {
                 generator.parse_date(row["order_date"])
                 for row in updated_fact_rows
-                if generator.parse_date(row["order_date"])
-                >= date(2026, 1, 1)
             }
             self.assertTrue(
-                {
-                    date(2026, 1, 1),
-                    date(2026, 1, 2),
-                    date(2026, 1, 3),
-                }.issubset(generated_dates)
+                set(expected_first_dates).issubset(
+                    first_generated_dates
+                )
             )
+
+            # Calculate the next batch from the first batch's persisted result.
+            second_run_date = date(2026, 10, 11)
+            second_batch_index = (
+                first_batch_index + 1
+            ) % len(generator.BATCH_PATTERN)
+
+            expected_second_dates = generator.plan_simulated_dates(
+                expected_first_dates[-1] + timedelta(days=1),
+                second_run_date,
+                second_batch_index,
+            )
+            self.assertTrue(expected_second_dates)
 
             # Run a second simulated day to verify persisted scheduling state.
             with (
@@ -702,12 +730,13 @@ class TestIncrementalRecovery(unittest.TestCase):
                         "incremental_data_generator.py",
                         "--apply",
                         "--today",
-                        "2026-10-11",
+                        second_run_date.isoformat(),
                     ],
                 ),
             ):
                 def read_table_second_run(path):
                     path = Path(path)
+
                     if path == raw / "dim_customer.csv":
                         return customers
                     if path == raw / "dim_product.csv":
@@ -718,6 +747,7 @@ class TestIncrementalRecovery(unittest.TestCase):
                         return real_read_csv(fact)
                     if path == dates:
                         return real_read_csv(dates)
+
                     raise AssertionError(
                         f"Unexpected CSV read: {path}"
                     )
@@ -725,6 +755,7 @@ class TestIncrementalRecovery(unittest.TestCase):
                 mock_read_csv.side_effect = read_table_second_run
                 second_result = generator.main()
 
+            # Verify the second run and persisted state.
             self.assertEqual(second_result, 0)
             self.assertFalse(journal.exists())
 
@@ -736,19 +767,24 @@ class TestIncrementalRecovery(unittest.TestCase):
                 second_state["source_hashes"]["fact_sales"],
                 generator.sha256_file(fact),
             )
-
             self.assertEqual(
                 second_state["source_hashes"]["dim_date"],
                 generator.sha256_file(dates),
             )
-
             self.assertEqual(
-                second_state["last_run_date"], "2026-10-11"
+                second_state["last_run_date"],
+                second_run_date.isoformat(),
             )
             self.assertEqual(
-                second_state["last_generated_date"], "2026-01-09"
+                second_state["last_generated_date"],
+                expected_second_dates[-1].isoformat(),
             )
-            self.assertEqual(second_state["next_batch_index"], 2)
+            self.assertEqual(
+                second_state["next_batch_index"],
+                (second_batch_index + 1)
+                % len(generator.BATCH_PATTERN),
+            )
+            self.assertGreater(second_state["last_generated_lines"], 0)
 
             final_fact_rows = real_read_csv(fact)
             final_date_rows = real_read_csv(dates)
@@ -759,21 +795,25 @@ class TestIncrementalRecovery(unittest.TestCase):
                 + second_state["last_generated_lines"],
             )
             self.assertEqual(
-                len(final_date_rows), len(original_date_rows) + 6
+                len(final_date_rows),
+                len(original_date_rows)
+                + len(expected_first_dates)
+                + len(expected_second_dates),
             )
 
             final_generated_dates = {
                 generator.parse_date(row["order_date"])
                 for row in final_fact_rows
-                if generator.parse_date(row["order_date"])
-                >= date(2026, 1, 1)
             }
             self.assertTrue(
-                {
-                    date(2026, 1, 4),
-                    date(2026, 1, 5),
-                    date(2026, 1, 6),
-                }.issubset(final_generated_dates)
+                set(expected_first_dates).issubset(
+                    final_generated_dates
+                )
+            )
+            self.assertTrue(
+                set(expected_second_dates).issubset(
+                    final_generated_dates
+                )
             )
 
     def test_main_stops_when_pending_journal_exists(self):

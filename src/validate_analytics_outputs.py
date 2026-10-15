@@ -34,6 +34,9 @@ DEMAND_PERIODS_FILE = OUTPUT_DIR / "demand_period_analysis.csv"
 PRODUCT_DEMAND_FILE = OUTPUT_DIR / "product_demand_priorities.csv"
 REGIONAL_DEMAND_FILE = OUTPUT_DIR / "regional_demand_priorities.csv"
 DEMAND_RECOMMENDATIONS_FILE = OUTPUT_DIR / "demand_planning_recommendations.csv"
+AI_ALERTS_FILE = OUTPUT_DIR / "ai_risk_alerts.csv"
+AI_RECOMMENDATIONS_FILE = OUTPUT_DIR / "ai_business_recommendations.csv"
+AI_SUMMARY_FILE = OUTPUT_DIR / "ai_executive_summary.md"
 
 # ============================================================
 # 2. VALIDATION HELPERS
@@ -807,6 +810,98 @@ def main():
                     ["Review", "Data needed"]
                 ).all(),
                 "Demand planning recommendation priorities are valid",
+            )
+
+    # --------------------------------------------------------
+    # AI Analytics MVP validation
+    # AI_ANALYTICS_MVP_VALIDATION
+    # --------------------------------------------------------
+
+    ai_alerts = None
+    if AI_ALERTS_FILE.is_file():
+        check(True, "AI risk alerts: file exists")
+        try:
+            ai_alerts = pd.read_csv(AI_ALERTS_FILE)
+            check(True, "AI risk alerts: CSV readable")
+            check(
+                {"severity", "category", "date", "message", "metric_value"}
+                .issubset(ai_alerts.columns),
+                "AI risk alerts: required columns present",
+            )
+            if {"severity", "category", "message"}.issubset(ai_alerts.columns):
+                check(
+                    ai_alerts["severity"].isin(
+                        ["High", "Medium", "Low"]
+                    ).all(),
+                    "AI risk alert severities are valid",
+                )
+                check(
+                    ai_alerts[["category", "message"]]
+                    .notna().all().all()
+                    and ai_alerts[["category", "message"]]
+                    .astype(str).apply(
+                        lambda col: col.str.strip().ne("")
+                    ).all().all(),
+                    "AI risk alert descriptions are populated",
+                )
+        except Exception as exc:
+            check(False, f"AI risk alerts: CSV validation failed ({exc})")
+    else:
+        check(False, "AI risk alerts: file exists")
+
+    if AI_RECOMMENDATIONS_FILE.is_file():
+        check(True, "AI recommendations: file exists")
+        try:
+            ai_recommendations = pd.read_csv(AI_RECOMMENDATIONS_FILE)
+            check(True, "AI recommendations: CSV readable")
+            check(
+                not ai_recommendations.empty,
+                "AI recommendations contain at least one recommendation",
+            )
+            required = [
+                "priority", "category", "finding",
+                "recommended_action", "evidence",
+            ]
+            check(
+                set(required).issubset(ai_recommendations.columns),
+                "AI recommendations: required columns present",
+            )
+            if set(required).issubset(ai_recommendations.columns):
+                text_values = ai_recommendations[required].astype("string")
+                check(
+                    text_values.notna().all().all()
+                    and text_values.apply(
+                        lambda col: col.str.strip().ne("")
+                    ).all().all(),
+                    "AI recommendation fields are populated",
+                )
+        except Exception as exc:
+            check(
+                False,
+                f"AI recommendations: CSV validation failed ({exc})",
+            )
+    else:
+        check(False, "AI recommendations: file exists")
+
+    check(
+        AI_SUMMARY_FILE.is_file(),
+        "AI executive summary: file exists",
+    )
+    if AI_SUMMARY_FILE.is_file():
+        try:
+            summary_text = AI_SUMMARY_FILE.read_text(encoding="utf-8")
+            check(
+                bool(summary_text.strip()),
+                "AI executive summary: file is not empty",
+            )
+            check(
+                "# AI-Assisted Business Analytics Summary" in summary_text,
+                "AI executive summary contains the expected heading",
+            )
+        except Exception as exc:
+            check(
+                False,
+                f"AI executive summary: file could not be read ({exc})",
             )
 
     # --------------------------------------------------------
