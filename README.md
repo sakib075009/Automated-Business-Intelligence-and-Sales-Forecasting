@@ -1,108 +1,83 @@
 # Automated Business Intelligence & Sales Forecasting Platform
 
-An end-to-end Business Intelligence and sales forecasting portfolio
-project combining Python data validation, sales analytics, forecasting,
-demand planning, automated business insights, incremental synthetic data
-generation, Power BI dashboards, automated tests, and GitHub Actions.
+An end-to-end Business Intelligence and sales forecasting portfolio project combining Python data engineering, sales analytics, forecasting, customer analytics, anomaly detection, demand planning, scenario analysis, rule-based business insights, Power BI dashboards, automated tests, and GitHub Actions.
 
--   **Live portfolio website:**
-    https://sakib075009.github.io/automated-bi-sales-forecasting/
--   **GitHub repository:**
-    https://github.com/sakib075009/automated-bi-sales-forecasting
+<p align="center">
+  <a href="https://sakib075009.github.io/automated-bi-sales-forecasting/">Live Portfolio Website</a> ·
+  <a href="https://sakib075009.github.io/automated-bi-sales-forecasting/#dashboard">Dashboard Gallery</a> ·
+  <a href="https://github.com/sakib075009/automated-bi-sales-forecasting">GitHub Repository</a> ·
+  <a href="https://github.com/sakib075009/automated-bi-sales-forecasting/actions">GitHub Actions</a>
+</p>
 
-------------------------------------------------------------------------
+---
 
 ## Project Overview
 
-This project demonstrates how a reproducible analytics pipeline can
-transform synthetic retail/e-commerce transaction data into business
-KPIs, forecasts, customer segments, anomaly reports, scenario
-comparisons, demand-planning summaries, and management recommendations.
+This project demonstrates how a reproducible analytics pipeline can transform synthetic retail and e-commerce transaction data into business KPIs, revenue forecasts, customer summaries, anomaly reports, scenario comparisons, demand-planning outputs, and management recommendations.
 
-The project combines Python analytics and validation with a Power BI
-dashboard. It also includes an incremental synthetic-data generator with
-integrity checks and recovery safeguards, automated tests, and a GitHub
-Actions workflow.
+The project combines Python data validation and analytics, a Power BI report, an incremental synthetic-data generator with integrity and recovery safeguards, automated tests, and a GitHub Actions workflow.
 
-**Current status:** The analytics pipeline, forecast model comparison,
-demand-planning analysis, chart generation, nine-page Phase 5 Power BI
-report, incremental generator, automated tests, GitHub Actions workflow,
-and GitHub Pages website are implemented. Production activation of
-incremental data generation and automatic publishing of refreshed
-analytics to the portfolio website remain separate tasks.
+**Data note:** The project uses synthetic data for demonstration and portfolio purposes. It does not represent actual business transactions.
+
+## Project Resources
+
+- **Live portfolio:** https://sakib075009.github.io/automated-bi-sales-forecasting/
+- **Dashboard gallery:** https://sakib075009.github.io/automated-bi-sales-forecasting/#dashboard
+- **GitHub repository:** https://github.com/sakib075009/automated-bi-sales-forecasting
+- **Source code:** https://github.com/sakib075009/automated-bi-sales-forecasting/tree/main/src
+- **Power BI reports:** https://github.com/sakib075009/automated-bi-sales-forecasting/tree/main/powerbi
+- **Automated tests:** https://github.com/sakib075009/automated-bi-sales-forecasting/tree/main/tests
+- **GitHub Actions workflow:** https://github.com/sakib075009/automated-bi-sales-forecasting/blob/main/.github/workflows/daily_pipeline.yml
+- **Workflow execution history:** https://github.com/sakib075009/automated-bi-sales-forecasting/actions
+- **Python dependencies:** https://github.com/sakib075009/automated-bi-sales-forecasting/blob/main/requirements.txt
 
 ## Key Features
 
 ### Data Engineering and Validation
 
--   Synthetic retail/e-commerce transaction data.
--   Validation of required columns, missing values, duplicate keys,
-    foreign-key relationships, and business rules.
--   Validation of transaction dates, quantities, discounts, revenue,
-    costs, and profit.
--   Incremental data generator with configurable simulated-date
-    scheduling.
--   SHA-256 source-integrity checks.
--   State persistence, recovery journaling, backups, and rollback
-    mechanisms.
--   Automated tests for scheduling, financial calculations, state
-    persistence, source integrity, and recovery behavior.
+- Synthetic retail and e-commerce transaction data.
+- Validation of required columns, missing values, duplicate keys, foreign-key relationships, and business rules.
+- Checks for transaction dates, quantities, discounts, revenue, costs, and profit.
+- Incremental data generation with simulated-date scheduling and safety controls.
+- SHA-256 source-integrity checks.
+- State persistence, pending-operation journaling, backups, and recovery mechanisms.
+- Automated tests for generator scheduling, financial calculations, state persistence, source integrity, and recovery behavior.
 
-### Business Intelligence and Analytics
+### Business Intelligence and Sales Analytics
 
--   Monthly revenue, cost, profit, order, customer, and quantity
-    analysis.
--   Product, regional, channel, and payment-method performance.
--   Customer purchase-frequency and RFM segmentation.
--   Business KPI summaries and rule-based business insights.
--   Daily sales anomaly detection.
--   Sales scenario analysis.
--   Automated analytics-output validation.
+- Revenue, cost, profit, profit margin, orders, customers, quantity, and average order value.
+- Product, regional, sales-channel, and payment-method performance.
+- Customer purchase-frequency and RFM summaries.
+- KPI summaries and rule-based business insights.
+- Daily sales anomaly detection.
+- Sales scenario analysis.
+- Automated analytics-output validation.
 
 ### Revenue Forecasting
 
-The project compares three forecasting baselines: **3-Month Moving
-Average**, **Previous-Month Naive**, and **Seasonal Naive**.
+The project compares three forecasting baselines: **3-Month Moving Average**, **Previous-Month Naive**, and **Seasonal Naive**.
 
-Evaluation metrics include Mean Absolute Error (MAE), Root Mean Squared
-Error (RMSE), Mean Absolute Percentage Error (MAPE), and forecast bias.
-The model comparison uses a 12-month holdout period covering
-January--December 2025. Forecast bias is calculated as
-`forecast_revenue - actual_revenue`.
+The comparison uses a 12-month holdout period covering January–December 2025. Evaluation metrics include Mean Absolute Error (MAE), Root Mean Squared Error (RMSE), Mean Absolute Percentage Error (MAPE), and forecast bias. Forecast bias is calculated as `forecast_revenue - actual_revenue`.
 
-  ----------------------------------------------------------------------------
-  Model                       MAE           RMSE           MAPE  Forecast Bias
-  ---------------- -------------- -------------- -------------- --------------
-  3-Month Moving    20.70 million  25.84 million         10.95%  -4.19 million
-  Average
+#### Recorded holdout results
 
-  Previous-Month    21.62 million  25.55 million         11.81%  +1.59 million
-  Naive
+| Model | MAE | RMSE | MAPE | Forecast bias |
+|---|---:|---:|---:|---:|
+| 3-Month Moving Average | 20.70 million | 25.84 million | 10.95% | -4.19 million |
+| Previous-Month Naive | 21.62 million | 25.55 million | 11.81% | +1.59 million |
+| Seasonal Naive | 40.87 million | 41.05 million | 22.51% | -40.87 million |
 
-  Seasonal Naive    40.87 million  41.05 million         22.51% -40.87 million
-  ----------------------------------------------------------------------------
+For this evaluation period, the 3-Month Moving Average has the lowest MAE and MAPE, while Previous-Month Naive has the lowest RMSE. These results describe this holdout period only and do not guarantee future performance.
 
-On this evaluation period, the 3-Month Moving Average has the lowest MAE
-and MAPE, while Previous-Month Naive has the lowest RMSE. These results
-are specific to this holdout period and do not guarantee future
-performance.
-
-The Seasonal Naive forward forecast uses revenue from the corresponding
-month in the prior year. The current generated six-month point forecast
-covers January--June 2026. Forecasts are estimates, not guaranteed
-future revenue, and the current forecast does not include prediction
-intervals. Holt-Winters was skipped by the current model-comparison
-implementation because its minimum training-history requirement was not
-met.
+The Seasonal Naive forward forecast uses revenue from the corresponding month in the prior year. The documented forecast output covers January–June 2026. These are point estimates, not guaranteed future revenue, and the forecast does not include prediction intervals. The original model-comparison documentation reports that Holt-Winters was skipped because its minimum training-history requirement was not met. Re-run the comparison to confirm behavior for the current data and code.
 
 ### Demand Trend and Planning
 
-The demand-planning analysis produces monthly demand summaries, product
-priorities, regional priorities, and management recommendations.
+The demand-planning analysis produces monthly demand summaries, product priorities, regional priorities, and management recommendations.
 
-Current analysis includes:
+The documented analysis includes:
 
-- 24 complete monthly periods from January 2024 through December 2025.
+- 24 monthly periods from January 2024 through December 2025.
 - Historical monthly quantity and a three-month moving average.
 - Year-over-year quantity comparisons.
 - Exploratory calendar-month comparisons.
@@ -111,358 +86,370 @@ Current analysis includes:
 - Regional demand priorities for 8 regions.
 - Five management recommendations.
 
-The demand-period labels are historical comparisons against the median;
-they are not, by themselves, proof of recurring seasonality, inventory
-shortage, or operational underperformance. Only two years of monthly
-observations are available, so calendar patterns should be treated as
-exploratory.
+Recorded highlights in the original analysis were product **P0047**, with 9,984 units, and region **R03**, with 51,688 units. These are historical analysis outputs; rerun demand planning to verify them against current data.
 
-Current highlights:
+The demand-period labels are comparisons against the historical median. They are not, by themselves, proof of recurring seasonality, inventory shortage, or operational underperformance. With only two years of monthly observations in that analysis, calendar patterns should be treated as exploratory.
 
-- Highest-quantity product in the current summary: **P0047**, with 9,984 units.
-- Highest-quantity region in the current summary: **R03**, with 51,688 units.
+#### Inventory data limitations
 
-#### Inventory Data Limitations
-
-The current input data does not establish stock on hand, supplier lead
-time, or stockout history. Therefore, the project does **not** currently
-calculate defensible reorder points, safety stock, inventory coverage,
-or stockout risk. Those calculations require appropriate inventory and
-replenishment data.
+The documented input data does not establish stock on hand, supplier lead time, or stockout history. Therefore, the project should not claim to calculate defensible reorder points, safety stock, inventory coverage, or stockout risk without appropriate inventory and replenishment data.
 
 ### Generated Forecast and Demand Visualizations
 
-The visualization script generates these charts under
-`dashboard/figures/`:
+The visualization script generates charts under `dashboard/figures/`:
 
--   `actual_vs_forecast_revenue.png`
--   `forecast_error_by_month.png`
--   `future_revenue_forecast.png`
--   `demand_trend_and_periods.png`
+- `actual_vs_forecast_revenue.png`
+- `forecast_error_by_month.png`
+- `future_revenue_forecast.png`
+- `demand_trend_and_periods.png`
 
-The future revenue chart combines historical monthly revenue with the
-January--June 2026 point forecast. The demand trend chart presents
-historical monthly quantity, the three-month moving average, and
-exploratory high/low demand periods.
+The future-revenue chart combines historical monthly revenue with the January–June 2026 point forecast. The demand-trend chart presents historical monthly quantity, the three-month moving average, and exploratory high/low demand periods.
 
 ### Interactive Power BI Dashboard
 
-The Phase 5 report contains nine pages:
+The original Phase 5 report documentation lists nine pages:
 
-1.  Business Intelligence Overview
-2.  Sales & Revenue Analysis
-3.  Customer Analytics
-4.  Product & Pareto Analysis
-5.  Regional Performance
-6.  Channel & Payment Analysis
-7.  Promotion & Discount Analysis
-8.  Decision Support
-9.  Forecasting & Demand Planning
+1. Business Intelligence Overview
+2. Sales & Revenue Analysis
+3. Customer Analytics
+4. Product & Pareto Analysis
+5. Regional Performance
+6. Channel & Payment Analysis
+7. Promotion & Discount Analysis
+8. Decision Support
+9. Forecasting & Demand Planning
 
-The new **Forecasting & Demand Planning** page includes:
+The documented **Forecasting & Demand Planning** page includes forecast-model accuracy comparison using MAPE, the January–June 2026 monthly revenue forecast, monthly demand trends and a three-month moving average, average quantity comparisons for historical High and Low demand periods, top 10 products by historical quantity, regional demand priorities, and management recommendations.
 
-- Forecast model accuracy comparison using MAPE.
-- Monthly revenue forecast for January--June 2026.
-- Monthly demand trend and three-month moving average.
-- Average quantity comparison for historically High and Low demand periods.
-- Top 10 products by historical quantity.
-- Regional demand priorities by quantity.
-- Management recommendations.
+The tracked Phase 5 report is `powerbi/Automated_BI_Sales_Forecasting_Phase5.pbix`. Earlier report versions may be available in the `powerbi/` directory. Check the current repository for the exact tracked files and use Microsoft Power BI Desktop to open the intended report. If the report uses local file paths, update its data-source settings before refreshing.
 
-The Phase 5 Power BI file is
-`powerbi/Automated_BI_Sales_Forecasting_Phase5.pbix`. Earlier report
-versions are retained separately for version history.
+## Dataset and Data Model
 
-## Dataset
+The project uses synthetic retail and e-commerce data. The data model includes a sales fact table and customer, date, product, and region dimensions.
 
-The project uses **synthetic data** for demonstration and portfolio
-purposes. It does not represent actual business transactions.
+The original dataset documentation recorded these initial counts:
 
-  Dataset          Initial record count
-  -------------- ----------------------
-  Fact Sales                    120,000
-  Dim Customer                    1,500
-  Dim Date                          731
-  Dim Product                        75
-  Dim Region                          8
+| Dataset | Initial record count |
+|---|---:|
+| Fact Sales | 120,000 |
+| Dim Customer | 1,500 |
+| Dim Date | 731 |
+| Dim Product | 75 |
+| Dim Region | 8 |
 
-The original historical sales period runs from January 1, 2024, through
-December 31, 2025. The incremental generator is designed to extend the
-sales fact table and date dimension when explicitly activated. The local
-working dataset may contain additional simulated records created during
-development.
+The original historical sales period ran from January 1, 2024, through December 31, 2025. The incremental generator is designed to extend the sales fact table and date dimension when activated. Local working data can therefore contain different row counts from the original dataset. Treat the figures above as documented initial counts, not a guarantee of the current local or committed row counts.
 
-The data follows a dimensional model with a sales fact table and
-customer, date, product, and region dimensions.
+The analytics workflow covers revenue, cost, profit, profit margin, orders, customers, average order value, product and regional performance, channel and payment-method performance, customer purchase frequency and RFM summaries, forecast accuracy and bias, daily anomalies, scenario outcomes, demand trends, and product/regional priorities.
 
-### Business Metrics
+## AI Analytics MVP
 
-The analytics pipeline calculates total revenue, cost, profit, profit
-margin, orders, customers, average order value, product and regional
-revenue, sales-channel and payment-method performance, customer purchase
-frequency and RFM segments, forecast accuracy and bias, daily sales
-anomalies, scenario-based outcomes, demand trends, and product/regional
-priorities.
+The AI Analytics MVP converts structured analytics outputs into executive-readable findings, risk alerts, and business recommendations.
 
-## Incremental Data Generation
+**Implementation approach:** The current module uses Python and predefined rules. It does not require a generative AI API.
 
-The incremental generator is designed to extend the dataset while
-protecting source-data integrity.
+### Input files
 
-Its intended workflow is: 1. Determine the next simulated sales date. 2.
-Apply the configured simulated-date schedule and date cutoff. 3.
-Generate approximately 40--50 sales records per simulated day. 4.
-Validate generated financial values and data relationships. 5. Update
-the sales fact table and date dimension. 6. Persist generator state and
-integrity metadata. 7. Use recovery mechanisms to protect against failed
-writes.
+The module expects the following CSV inputs in its configured analytics output directory, documented as `data/outputs/`:
 
-The generator uses SHA-256 source-integrity checks, state tracking, a
-pending-operation journal, backups, and recovery mechanisms. The
-existing recovery and integrity test suite contains 13 tests. An
-isolated end-to-end test has also successfully exercised incremental
-generation, data validation, the analytics pipeline, and output
-validation without modifying production data.
+- `business_kpi_summary.csv`
+- `daily_sales_anomalies.csv`
+- `forecast_model_comparison.csv`
+- `customer_rfm_summary.csv`
+- `sales_scenario_results.csv`
+- `demand_planning_recommendations.csv`
 
-**Important:** The generator defaults to preview mode. Production
-activation has not been established as an automated production process.
-Review the date-selection logic, configuration, source paths, backups,
-and recovery procedures before using `--apply` on important data.
+### Generated outputs
+
+| File | Purpose |
+|---|---|
+| `ai_executive_summary.md` | Executive-readable summary of analytical findings |
+| `ai_risk_alerts.csv` | Structured risk alerts and supporting metrics |
+| `ai_business_recommendations.csv` | Recommended actions and supporting evidence |
+
+The documented rules include KPI declines, revenue anomalies, forecast-model selection, customer revenue concentration, downside-scenario profit risk, and demand-planning recommendations.
+
+The risk-alert CSV schema is:
+
+`severity, category, date, message, metric_value`
+
+The business-recommendation CSV schema is:
+
+`priority, category, finding, recommended_action, evidence`
+
+The module depends on the quality and availability of upstream analytics outputs. Recommendations should be reviewed against the underlying data and business context before use.
+
+**Previously reported local test result:** 13 AI Analytics MVP tests passed with zero failures and zero errors. This is a historical development result, not a claim that the current working tree or public repository has been freshly tested. Re-run the tests after changes.
+
+## Incremental Synthetic Data Generation
+
+The incremental generator is designed to extend the dataset while protecting source-data integrity.
+
+The documented workflow is to determine the next simulated sales date, apply the configured simulated-date schedule and date cutoff, generate approximately 40–50 sales records per simulated day, validate generated financial values and data relationships, update the sales fact table and date dimension, persist generator state and integrity metadata, and use recovery mechanisms to protect against failed writes.
+
+The documented safeguards include SHA-256 source-integrity checks, state tracking, a pending-operation journal, backups, and recovery mechanisms. The original recovery and integrity test suite was documented as containing 13 tests. An isolated end-to-end test was also reported to have exercised incremental generation, data validation, the analytics pipeline, and output validation without modifying production data. Re-run the relevant tests to verify the current state.
+
+### Important operational note
+
+The GitHub Actions workflow currently invokes the generator with `--apply`. This differs from a local preview-only run: the workflow can apply incremental changes and subsequently commit selected data and state files to `main`. Review the generator's current source code, integrity checks, recovery behavior, workflow permissions, and repository state before changing or manually triggering this process. Do not bypass safety checks to force a successful run.
 
 ## Analytics Pipeline and Output Validation
 
 Run the configured analytics pipeline:
 
-``` powershell
+```powershell
 python src/run_analytics_pipeline.py
 ```
 
-The configured pipeline runs forecast model comparison, anomaly
-detection, customer RFM segmentation, scenario analysis, business
-insights, and output validation.
+The configured pipeline has included forecast-model comparison, anomaly detection, customer RFM segmentation, scenario analysis, business insights, and output validation. Consult the current source code and terminal output for the exact stages executed by the current version.
 
-Demand-planning analysis and chart generation are separate scripts:
+Demand-planning analysis, chart generation, and output validation can be run separately:
 
-``` powershell
+```powershell
 python src/demand_planning_analysis.py
 python src/forecast_visualizations.py
 python src/validate_analytics_outputs.py
 ```
 
-During Phase 5 development, output validation completed with **76 checks
-passed and 0 failed** after the refreshed outputs were generated.
-Results can change when source data or code changes, so rerun validation
-after future modifications.
+The structured source-data validator can be run with:
 
-Generated analytics outputs under `data/outputs/` are reproducible and
-excluded from Git tracking. Visualization PNG files are generated under
-`dashboard/figures/`.
+```powershell
+python src/data_validation.py
+```
+
+A historical Phase 5 development run reported **76 output-validation checks passed and 0 failed**. A later development run was reported as **89 checks passed and 0 failures**. These are historical results; validation counts and outcomes may change with code, data, or configuration. Re-run validation after changes and use the current terminal output as the source of truth.
+
+Generated analytics outputs are stored under `data/outputs/` and may be excluded from Git tracking. Generated visualization PNG files are stored under `dashboard/figures/`.
 
 ## GitHub Actions Automation
 
 The repository includes `.github/workflows/daily_pipeline.yml`.
 
-The workflow: 1. Checks out the repository. 2. Sets up Python 3.12. 3.
-Installs analytics dependencies. 4. Validates the committed source
-dataset. 5. Runs the configured analytics pipeline. 6. Uploads generated
-analytics outputs as a downloadable workflow artifact.
+The currently inspected workflow configuration:
 
-The workflow supports manual execution and scheduled execution at 03:00
-UTC (09:00 Bangladesh time).
+1. Checks out the repository.
+2. Sets up Python 3.12 on an Ubuntu 24.04 runner.
+3. Installs the configured analytics dependencies.
+4. Validates source data.
+5. Runs incremental synthetic-data generation with `--apply`.
+6. Validates the updated source data.
+7. Runs the analytics pipeline.
+8. Uploads `data/outputs/` as the `bi-analytics-outputs` artifact with a 14-day retention period.
+9. Commits changed `data/raw/fact_sales.csv`, `data/raw/dim_date.csv`, and `data/raw/incremental_generator_state.json` to `main` when staged changes exist.
 
-Generated outputs are uploaded as artifacts with a 14-day retention
-period. The workflow currently processes the committed source dataset;
-it does not automatically activate incremental data generation or
-publish refreshed analytics to the portfolio website.
+The workflow supports manual execution and is configured with the cron expression `17 1 * * *` and timezone `Asia/Dhaka` (01:17 Bangladesh time daily). Actual run success and artifact availability should be confirmed in the [GitHub Actions history](https://github.com/sakib075009/automated-bi-sales-forecasting/actions).
+
+The workflow has `contents: write` permission and uses the GitHub Actions bot identity to push selected changed files. It does not, based on the inspected workflow file, publish refreshed analytics directly to the GitHub Pages portfolio website. Confirm the workflow configuration after future changes.
 
 ## Technology Stack
 
--   **Programming:** Python
--   **Data processing:** Pandas, NumPy
--   **Analytics and validation:** Python
--   **Forecasting:** Moving-average, previous-month naive, and
-    seasonal-naive baselines
--   **Business Intelligence:** Microsoft Power BI, DAX
--   **Testing:** Python `unittest`
--   **Version control:** Git, GitHub
--   **Automation:** GitHub Actions
--   **Portfolio deployment:** GitHub Pages
+| Area | Technologies |
+|---|---|
+| Programming | Python |
+| Data processing | pandas, NumPy |
+| Analytics and validation | Python analytical modules |
+| Forecasting | Moving-average, previous-month naive, and seasonal-naive baselines |
+| Business Intelligence | Microsoft Power BI, DAX |
+| AI Analytics MVP | Python and deterministic business rules |
+| Testing | Python `unittest` |
+| Version control | Git, GitHub |
+| Automation | GitHub Actions |
+| Portfolio hosting | GitHub Pages |
+| Data storage | CSV inputs and outputs |
 
-## Project Structure
+See `requirements.txt` for the project's Python dependencies.
+
+## Repository Structure
+
+This is a representative structure; additional source modules, tests, backups, generated files, and documentation may exist.
 
 ```text
-project-01/
-|-- .github/
-|   `-- workflows/
-|       `-- daily_pipeline.yml
-|-- dashboard/
-|   `-- figures/
-|       |-- actual_vs_forecast_revenue.png
-|       |-- forecast_error_by_month.png
-|       |-- future_revenue_forecast.png
-|       `-- demand_trend_and_periods.png
-|-- data/
-|   |-- raw/
-|   |-- processed/
-|   |-- outputs/                  # Generated; excluded from Git
-|   `-- backups/                  # Local backups; excluded from Git
-|-- notebooks/
-|-- powerbi/
-|   |-- Automated_BI_Sales_Forecasting.pbix
-|   |-- Automated_BI_Sales_Forecasting_Phase2_DAX_Complete.pbix
-|   `-- Automated_BI_Sales_Forecasting_Phase5.pbix
-|-- src/
-|   |-- data_validation.py
-|   |-- incremental_data_generator.py
-|   |-- demand_planning_analysis.py
-|   |-- forecast_model_comparison.py
-|   |-- forecast_visualizations.py
-|   |-- sales_anomaly_detection.py
-|   |-- customer_rfm_segmentation.py
-|   |-- sales_scenario_analysis.py
-|   |-- business_insights_engine.py
-|   |-- validate_analytics_outputs.py
-|   `-- run_analytics_pipeline.py
-|-- tests/
-|   |-- test_incremental_recovery.py
-|   `-- test_demand_planning.py
-|-- .gitignore
-|-- README.md
-`-- requirements.txt
+automated-bi-sales-forecasting/
+├── .github/
+│   └── workflows/
+│       └── daily_pipeline.yml
+├── dashboard/
+│   └── figures/
+├── data/
+│   ├── raw/
+│   ├── processed/
+│   └── outputs/
+├── notebooks/
+├── powerbi/
+├── src/
+│   ├── ai_analytics_mvp.py
+│   ├── data_validation.py
+│   ├── demand_planning_analysis.py
+│   ├── forecast_model_comparison.py
+│   ├── forecast_visualizations.py
+│   ├── incremental_data_generator.py
+│   ├── run_analytics_pipeline.py
+│   └── validate_analytics_outputs.py
+├── tests/
+│   ├── test_ai_analytics_mvp.py
+│   └── test_incremental_recovery.py
+├── requirements.txt
+└── README.md
 ```
+
 ## Getting Started
 
 ### Prerequisites
 
--   Python 3.12 recommended for the automation workflow
--   Git
--   Microsoft Power BI Desktop to explore the report
+- Python 3.12 is used by the inspected GitHub Actions workflow.
+- Git.
+- Microsoft Power BI Desktop to explore `.pbix` reports.
+- PowerShell on Windows or another compatible terminal.
 
-### 1. Clone the Repository
+### 1. Clone the repository
 
-``` powershell
+```powershell
 git clone https://github.com/sakib075009/automated-bi-sales-forecasting.git
 cd automated-bi-sales-forecasting
 ```
 
-### 2. Create and Activate a Virtual Environment
+### 2. Create and activate a virtual environment
 
-``` powershell
+On Windows PowerShell:
+
+```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 ```
 
-### 3. Install Dependencies
+### 3. Install dependencies
 
-``` powershell
+```powershell
+python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
 
-### 4. Validate the Dataset
+### 4. Validate the source dataset
 
-``` powershell
+```powershell
 python src/data_validation.py
 ```
 
-### 5. Run the Analytics Pipeline
+Investigate reported validation failures before using the data downstream.
 
-``` powershell
+### 5. Run the analytics pipeline
+
+```powershell
 python src/run_analytics_pipeline.py
 ```
 
-### 6. Run Demand Planning and Refresh Visualizations
+Review the terminal output and confirm that the configured stages complete successfully.
 
-``` powershell
-python src/demand_planning_analysis.py
-python src/forecast_visualizations.py
+### 6. Validate analytics outputs
+
+```powershell
 python src/validate_analytics_outputs.py
 ```
 
-### 7. Run the Tests
+Investigate reported failures before relying on generated results.
 
-``` powershell
+### 7. Run the AI Analytics MVP tests
+
+```powershell
+python -m unittest tests.test_ai_analytics_mvp -v
+```
+
+### 8. Run incremental recovery tests
+
+```powershell
 python -m unittest tests.test_incremental_recovery -v
-python -m unittest tests.test_demand_planning -v
 ```
 
-### 8. Preview the Incremental Generator
+### 9. Run the complete test suite
 
-``` powershell
-python src/incremental_data_generator.py
+```powershell
+python -m unittest discover -s tests -v
 ```
 
-Preview mode does not activate production writes. Do not use `--apply`
-until the configuration, date-selection behavior, backups, source
-integrity, and recovery behavior have been reviewed.
+Use the current terminal output as the source of truth for the test count and result.
 
-### 9. Explore the Power BI Report
+### 10. Run demand planning and generate charts
 
-Open `powerbi/Automated_BI_Sales_Forecasting_Phase5.pbix` in Power BI
-Desktop to explore the nine-page Phase 5 report. Update data-source
-paths if necessary, then refresh the report.
+```powershell
+python src/demand_planning_analysis.py
+python src/forecast_visualizations.py
+```
+
+### 11. Preview incremental generation
+
+Check the current generator source code for its supported arguments and preview command before running it. Review the proposed changes, integrity checks, backups, and recovery behavior. Do not use `--apply` on important data unless you have reviewed the implications and intentionally want to apply changes.
+
+### 12. Explore the Power BI report
+
+Browse the [`powerbi/` directory](https://github.com/sakib075009/automated-bi-sales-forecasting/tree/main/powerbi), open the intended `.pbix` file in Power BI Desktop, and update local data-source paths if necessary.
+
+## Testing and Verification
+
+The project uses Python's built-in `unittest` framework. Tests have covered incremental-generator recovery and integrity behavior, demand planning, and AI Analytics MVP behavior. The exact modules and coverage can change as the project evolves.
+
+The AI Analytics MVP test module has been documented as covering KPI decline and recovery, forecast selection, invalid numeric values, empty inputs, recommendation evidence, anomaly and demand-planning recommendations, and output schemas and counts.
+
+Always rerun relevant tests and validation after source-code, data, or configuration changes. Historical test and validation results in this README are not substitutes for a fresh run.
 
 ## Current Implementation Status
 
-### Implemented
+### Implemented components
 
--   Synthetic historical sales dataset and dimensional data model
--   Source-data validation
--   Configured analytics pipeline and output validation
--   Forecast model comparison and prediction outputs
--   Forecast visualization generation
--   Sales anomaly detection
--   Customer RFM segmentation
--   Sales scenario analysis
--   Business KPI and insight generation
--   Demand trend, product and regional demand-priority analysis
--   Management recommendations with documented inventory-data
-    limitations
--   Nine-page Phase 5 Power BI report
--   Incremental generator with integrity and recovery safeguards
--   Automated tests
--   GitHub Actions workflow with artifact upload
--   GitHub Pages portfolio website
+- Synthetic sales data and data validation.
+- Analytics pipeline and output validation.
+- Forecasting and model comparison.
+- Customer analytics and RFM summaries.
+- Anomaly detection.
+- Demand-planning analysis.
+- Scenario analysis.
+- Power BI reporting.
+- Incremental data generation with integrity and recovery safeguards.
+- GitHub Actions workflow configuration, including automated data updates.
+- GitHub Pages portfolio website.
+- AI Analytics MVP and its local unit tests.
 
-### Remaining Work
+### Ongoing verification
 
--   Complete production-readiness review of incremental generation,
-    including date-selection behavior.
--   Decide when and how to activate incremental generation safely.
--   Validate the intended long-term scheduled workflow with an
-    appropriate data strategy.
--   Decide whether and how refreshed analytics should be published to
-    the website.
--   Add inventory-on-hand, supplier lead-time, and stockout data before
-    implementing inventory optimization calculations.
--   Refresh the website screenshots to show the new report page.
--   Complete final repository review and publish approved changes.
+- Confirm successful scheduled workflow runs and artifact availability.
+- Review incremental-generation safeguards and recovery behavior.
+- Verify the current AI Analytics MVP files and tests in the public repository.
+- Run the full test suite after integration changes.
+- Validate generated outputs after new data is introduced.
+- Review forecast evaluation methodology and assumptions.
+- Confirm documented commands match the current script interfaces.
+- Confirm Power BI report contents and data-source settings against the intended version.
 
 ## Future Development
 
-Potential enhancements include more advanced forecasting models,
-inventory and replenishment planning using inventory inputs, automated
-report publishing, expanded business decision support, and an
-AI-assisted business analytics interface.
+Potential enhancements include:
 
-New features should be added after the existing pipeline,
-data-generation behavior, and automation are fully reviewed.
+- Forecast backtesting and model monitoring.
+- Additional customer retention and lifetime-value analysis.
+- Demand planning using stock, supplier, and replenishment data.
+- More comprehensive scenario modeling.
+- Expanded data-quality and regression tests.
+- Improved business explanations and decision-support outputs.
+- Monitoring of automated data updates and workflow failures.
+- Automated report refresh or publishing, if explicitly implemented and tested.
 
-## Screenshots and Portfolio
+Future enhancements should be evaluated against reproducibility, maintainability, data quality, and operating cost.
 
-The portfolio website presents the project and its dashboard
-screenshots:
+## Portfolio and Screenshots
 
-**Website:**
-https://sakib075009.github.io/automated-bi-sales-forecasting/
-
-The website screenshots may need to be refreshed separately to reflect
-the new Forecasting & Demand Planning page.
+- [Open the live portfolio](https://sakib075009.github.io/automated-bi-sales-forecasting/)
+- [Explore the dashboard gallery](https://sakib075009.github.io/automated-bi-sales-forecasting/#dashboard)
+- [Browse the source repository](https://github.com/sakib075009/automated-bi-sales-forecasting)
+- [Inspect workflow runs and artifacts](https://github.com/sakib075009/automated-bi-sales-forecasting/actions)
 
 ## Author and Repository
 
-**GitHub repository:**
-https://github.com/sakib075009/automated-bi-sales-forecasting
+**Project:** Automated Business Intelligence & Sales Forecasting Platform
 
-This project demonstrates practical skills in Business Intelligence,
-Python analytics, forecasting, demand planning, data validation,
-automated testing, workflow automation, and portfolio deployment.
+**GitHub:** [sakib075009/automated-bi-sales-forecasting](https://github.com/sakib075009/automated-bi-sales-forecasting)
+
+**Portfolio website:** [Automated BI — Sales Forecasting Platform](https://sakib075009.github.io/automated-bi-sales-forecasting/)
+
+This project demonstrates practical skills in Business Intelligence, Python analytics, forecasting, data validation, customer analytics, automated testing, workflow automation, and portfolio deployment.
+
+---
+
+*This is a portfolio and learning project using synthetic data. Forecasts, alerts, and recommendations should be validated before being used for real operational or financial decisions.*
