@@ -4,7 +4,7 @@ An end-to-end Business Intelligence and sales forecasting portfolio project comb
 
 <p align="center">
   <a href="https://sakib075009.github.io/Automated-Business-Intelligence-and-Sales-Forecasting">Live Portfolio Website</a> ·
-  <a href="https://sakib075009.github.io/automated-bi-sales-forecasting/#dashboard">Dashboard Gallery</a> ·
+  <a href="https://sakib075009.github.io/Automated-Business-Intelligence-and-Sales-Forecasting/?utm_source=chatgpt.com#dashboard">Dashboard Gallery</a> ·
   <a href="https://github.com/sakib075009/automated-bi-sales-forecasting">GitHub Repository</a> ·
   <a href="https://github.com/sakib075009/automated-bi-sales-forecasting/actions">GitHub Actions</a>
 </p>
