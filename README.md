@@ -3,7 +3,7 @@
 An end-to-end Business Intelligence and sales forecasting portfolio project combining Python data engineering, sales analytics, forecasting, customer analytics, anomaly detection, demand planning, scenario analysis, rule-based business insights, Power BI dashboards, automated tests, and GitHub Actions.
 
 <p align="center">
-  <a href="https://sakib075009.github.io/automated-bi-sales-forecasting/">Live Portfolio Website</a> ·
+  <a href="https://sakib075009.github.io/Automated-Business-Intelligence-and-Sales-Forecasting">Live Portfolio Website</a> ·
   <a href="https://sakib075009.github.io/automated-bi-sales-forecasting/#dashboard">Dashboard Gallery</a> ·
   <a href="https://github.com/sakib075009/automated-bi-sales-forecasting">GitHub Repository</a> ·
   <a href="https://github.com/sakib075009/automated-bi-sales-forecasting/actions">GitHub Actions</a>
