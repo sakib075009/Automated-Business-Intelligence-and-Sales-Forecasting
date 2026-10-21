@@ -759,3 +759,6 @@ date,year,quarter,month_number,month_name,week_number,day,day_name,is_weekend,mo
 2026-01-27,2026,Q1,1,January,5,27,Tuesday,0,2026-01
 2026-01-28,2026,Q1,1,January,5,28,Wednesday,0,2026-01
 2026-01-29,2026,Q1,1,January,5,29,Thursday,0,2026-01
+2026-01-30,2026,Q1,1,January,5,30,Friday,0,2026-01
+2026-01-31,2026,Q1,1,January,5,31,Saturday,1,2026-01
+2026-02-01,2026,Q1,2,February,5,1,Sunday,1,2026-02
