@@ -1,15 +1,16 @@
 {
-  "next_batch_index": 3,
-  "last_run_date": "2026-10-31",
+  "next_batch_index": 0,
+  "last_run_date": "2026-11-01",
   "source_hashes": {
-    "fact_sales": "eaf68f89e80641639d12d342a2c4190697eae5e180379c66f39d193803c8e223",
-    "dim_date": "ebd6bc576d7541acbd92ff61e03fffa8d38839d2c9647caa3af7e5f46e4a971b"
+    "fact_sales": "07cb665884ed7f2c89dcb74bf710296143468fd688b0de03e940b0e42bee20d7",
+    "dim_date": "aa9f37decd1cd7bf1f40e14b1811e047e37773d16b729ec1aa404ebfb3688ca7"
   },
-  "last_generated_date": "2026-03-02",
-  "last_generated_lines": 126,
+  "last_generated_date": "2026-03-06",
+  "last_generated_lines": 172,
   "daily_line_counts": {
-    "2026-02-28": 44,
-    "2026-03-01": 41,
-    "2026-03-02": 41
+    "2026-03-03": 47,
+    "2026-03-04": 44,
+    "2026-03-05": 41,
+    "2026-03-06": 40
   }
 }
