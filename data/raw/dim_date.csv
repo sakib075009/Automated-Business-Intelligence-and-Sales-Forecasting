@@ -837,3 +837,6 @@ date,year,quarter,month_number,month_name,week_number,day,day_name,is_weekend,mo
 2026-04-15,2026,Q2,4,April,16,15,Wednesday,0,2026-04
 2026-04-16,2026,Q2,4,April,16,16,Thursday,0,2026-04
 2026-04-17,2026,Q2,4,April,16,17,Friday,0,2026-04
+2026-04-18,2026,Q2,4,April,16,18,Saturday,1,2026-04
+2026-04-19,2026,Q2,4,April,16,19,Sunday,1,2026-04
+2026-04-20,2026,Q2,4,April,17,20,Monday,0,2026-04
