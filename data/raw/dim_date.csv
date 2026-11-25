@@ -853,3 +853,6 @@ date,year,quarter,month_number,month_name,week_number,day,day_name,is_weekend,mo
 2026-05-01,2026,Q2,5,May,18,1,Friday,0,2026-05
 2026-05-02,2026,Q2,5,May,18,2,Saturday,1,2026-05
 2026-05-03,2026,Q2,5,May,18,3,Sunday,1,2026-05
+2026-05-04,2026,Q2,5,May,19,4,Monday,0,2026-05
+2026-05-05,2026,Q2,5,May,19,5,Tuesday,0,2026-05
+2026-05-06,2026,Q2,5,May,19,6,Wednesday,0,2026-05

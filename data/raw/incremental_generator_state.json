@@ -1,15 +1,15 @@
 {
-  "next_batch_index": 2,
-  "last_run_date": "2026-11-24",
+  "next_batch_index": 3,
+  "last_run_date": "2026-11-25",
   "source_hashes": {
-    "fact_sales": "73f522aa3f1fd7bb79c43b77e40ea913eef70d25e5110cef09032605d9988dbf",
-    "dim_date": "4db5676ba97f2c903be0f5b63e066966a42a9750a9b434bde38051fe02be0fb0"
+    "fact_sales": "4bd1a18a3ba812412066d339d4033b6c940992decfa6c9397e0b317982eea1e3",
+    "dim_date": "99f46e8b2eebeedea1d7779d799e6431438bb0aa7f398429fd5881e4e94a7611"
   },
-  "last_generated_date": "2026-05-03",
-  "last_generated_lines": 144,
+  "last_generated_date": "2026-05-06",
+  "last_generated_lines": 129,
   "daily_line_counts": {
-    "2026-05-01": 47,
-    "2026-05-02": 47,
-    "2026-05-03": 50
+    "2026-05-04": 42,
+    "2026-05-05": 41,
+    "2026-05-06": 46
   }
 }
